@@ -146,6 +146,6 @@ void assemble (std::istream& is) {
 
 int main() {
     std::istream& is = std::cin;
-
+    
     assemble(is);
 }

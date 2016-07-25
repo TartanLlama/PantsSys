@@ -6,6 +6,8 @@
 #include <SDL2/SDL.h>
 
 #include "PantsIsa.hpp"
+#include "PantsUI.hpp"
+#include "Config.hpp"
 
 class RegisterSet {
 public:
@@ -56,13 +58,8 @@ private:
     std::array<uint64_t, static_cast<size_t>(Register::n_registers)> m_regs;
 };
 
-constexpr size_t mem_size = 1024*1024*5;
-constexpr size_t screen_width = 640;
-constexpr size_t screen_height = 480;
-
 using Memory = std::array<char, mem_size>;
 using Instruction = std::pair<Opcode, uint32_t>;
-
 
 uint16_t high16 (uint32_t i) {
     return i >> 16;
@@ -85,7 +82,7 @@ std::pair<Opcode, uint32_t> fetch (const RegisterSet& regs, const Memory& mem) {
     return {op, operands};
 }
 
-bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem) {
+bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem, PantsUI& ui) {
     Opcode op = inst.first;
     uint32_t operands = inst.second;
     
@@ -125,9 +122,19 @@ bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem) {
             return true;
         }
         break;
-        
+
+    case Opcode::storei: 
+    {
+        mem[regs.me()] = regs.get(low16(operands));
+        if(regs.me() < vga_width * vga_height) {
+            ui.redraw(mem);
+        }
+        break;
+    }
+
     case Opcode::copyi: regs.get(high16(operands)) = regs.get(low16(operands)); break;
     case Opcode::jumpi: regs.pc() = regs.me(); return true;
+        
     case Opcode::halti: return false;
     default: std::cerr << "Bad opcode" << static_cast<uint32_t>(op); abort(); break;
     }
@@ -137,20 +144,10 @@ bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem) {
 }
 
 void setUpScreen() {
-    SDL_Window* window = nullptr;
-    SDL_Surface* surface = nullptr;
-    SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("PantsVM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
-
-    surface = SDL_GetWindowSurface(window);
-    SDL_FillRect(surface, nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
-    SDL_UpdateWindowSurface(window);
-
-    SDL_Delay(2000);
 }
 
 int main() {
-    setUpScreen();
+    PantsUI ui{};
 
     RegisterSet regs{};
     Memory mem{};
@@ -163,9 +160,9 @@ int main() {
 
     while (true) {
         auto inst = fetch(regs, mem);
-        if (!execute(inst, regs, mem)) break;
+        if (!execute(inst, regs, mem, ui)) break;
         regs.dump();
     }
 
-    while(true){}
+    SDL_Delay(2000);
 }
