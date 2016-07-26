@@ -52,33 +52,13 @@ public:
             throw std::runtime_error{std::string{"Unable to load font: "}.append(TTF_GetError())};
         }
 
-        SDL_Color colour = {100,110,110};
-        SDL_Surface* text_surface = TTF_RenderText_Solid(m_font, "E", colour);
-        if (!text_surface) {
-            throw std::runtime_error{std::string{"Unable to render text surface: "}.append(TTF_GetError())};
-        }
-
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, text_surface);
-        if (!m_texture) {
-            throw std::runtime_error{std::string{"Unable to create texture from rendered text: "}.append(TTF_GetError())};
-        }
-        
-        SDL_FreeSurface(text_surface);
-
-        SDL_SetRenderDrawColor( m_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+        SDL_SetRenderDrawColor( m_renderer, 0,0,0,0 );
         SDL_RenderClear( m_renderer );
-        
-        SDL_Rect render_quad = { 0, 0, 10, 10 };
-        SDL_RenderCopy(m_renderer, m_texture, nullptr, &render_quad);
 
         SDL_RenderPresent(m_renderer);
-
     }
 
-    void redraw(const std::array<char, mem_size>& mem) {
-
-    }
-
+    void redraw(const std::array<char, mem_size>& mem);
 private:
     SDL_Window* m_window;
     SDL_Surface* m_surface;

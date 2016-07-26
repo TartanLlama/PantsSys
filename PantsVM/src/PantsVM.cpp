@@ -118,7 +118,7 @@ bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem, PantsUI& 
 
     case Opcode::branchi:
         if (regs.get(high16(operands))) {
-            regs.pc() = regs.me();
+            regs.pc() = regs.me() + code_offset;
             return true;
         }
         break;
@@ -133,7 +133,7 @@ bool execute (const Instruction& inst, RegisterSet& regs, Memory& mem, PantsUI& 
     }
 
     case Opcode::copyi: regs.get(high16(operands)) = regs.get(low16(operands)); break;
-    case Opcode::jumpi: regs.pc() = regs.me(); return true;
+    case Opcode::jumpi: regs.pc() = regs.me() + code_offset; return true;
         
     case Opcode::halti: return false;
     default: std::cerr << "Bad opcode" << static_cast<uint32_t>(op); abort(); break;
@@ -150,13 +150,14 @@ int main() {
     PantsUI ui{};
 
     RegisterSet regs{};
+    regs.pc() = code_offset;
     Memory mem{};
 
     std::cin >> std::noskipws;
     std::istream_iterator<char> it (std::cin);
     std::istream_iterator<char> end;
-    std::copy(it, end, mem.data());
-    //for (int i = 0; i<64; ++i) std::cout << (int)mem[i] << ' ';
+    std::copy(it, end, mem.data() + code_offset);
+//    for (int i = 0; i<64; ++i) std::cout << (int)mem[i+code_offset] << ' ';
 
     while (true) {
         auto inst = fetch(regs, mem);
