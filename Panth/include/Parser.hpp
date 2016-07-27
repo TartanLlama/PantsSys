@@ -1,0 +1,3 @@
+class Parser {
+    AST parse();
+};
