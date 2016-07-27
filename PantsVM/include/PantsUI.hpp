@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "Config.hpp"
-
+#include <iostream>
 class PantsUI {
 public:
     ~PantsUI() {
@@ -25,6 +25,7 @@ public:
         
         m_window = SDL_CreateWindow("PantsEmu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
         if (!m_window) {
+             std::cerr << SDL_GetError();
             throw std::runtime_error{std::string{"Unable to create window: "}.append(SDL_GetError())};
         }
 
@@ -34,9 +35,13 @@ public:
         }
 
         m_renderer = SDL_GetRenderer(m_window);
-        if (!m_renderer) {
-            throw std::runtime_error{std::string{"Unable to get renderer: "}.append(SDL_GetError())};
-        }
+		if (!m_renderer) {
+			m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+			if (!m_renderer) {
+				throw std::runtime_error{ std::string{"Unable to get renderer: "}.append(SDL_GetError()) };
+
+			}
+		}
 
         auto img_flags = IMG_INIT_PNG;
         if (! (IMG_Init(img_flags) & img_flags) ) {

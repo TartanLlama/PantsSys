@@ -13,7 +13,7 @@ void PantsUI::redraw(const std::array<char, mem_size>& mem) {
 
         
     for (size_t i = 0; i < vga_width * vga_height; ++i) {
-        std::cout << (uint32_t)mem[i] << '\n';
+        //std::cout << (uint32_t)mem[i] << '\n';
         char text[2] = { decode_table[mem[i]], '\0' };
         if (text[0] != '\0') {
             SDL_Surface* text_surface = TTF_RenderText_Blended(m_font, text, black);
