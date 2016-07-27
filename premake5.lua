@@ -4,6 +4,7 @@ workspace "PantsSys"
 project "PantsAsm"
     kind "ConsoleApp"
     language "C++"
+    flags {"C++11"}
     targetdir "bin/%{cfg.buildcfg}"
     includedirs { "Common/include", "PantsAsm/include"}
 
@@ -12,6 +13,7 @@ project "PantsAsm"
 project "PantsVM"
     kind "ConsoleApp"
     language "C++"
+    flags {"C++11"}
     targetdir "bin/%{cfg.buildcfg}"
     includedirs { "Common/include", "PantsVM/include"}
     links { "SDL2", "SDL2_image", "SDL2_ttf" }

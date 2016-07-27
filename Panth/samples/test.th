@@ -1,0 +1,13 @@
+(func operator-p (op)
+      (in op '(+ - * / < > <= >= = and not or bitand bitor)))
+
+(func codegen (ast)
+      (for (form ast)
+           (let (op (first form))
+             (cond
+               ((= op 'func) (gen-func (rest form)))
+               ((= op 'quote) (gen-quote (rest form)))
+               ((operator-p op) (gen-op op (rest form)))))
+
+(func entry(args)
+      (codegen (read (first args))))
