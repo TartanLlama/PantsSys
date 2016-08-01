@@ -21,19 +21,35 @@ filter "configurations:Debug"
 project "PantsAsm"
     kind "ConsoleApp"
     language "C++"
-    flags {"C++11"}
-    targetdir "bin/%{cfg.buildcfg}"
+    flags {"C++14"}
+    targetdir "build/bin/%{cfg.buildcfg}"
     includedirs { "Common/include", "PantsAsm/include" }
     files { "PantsAsm/src/**.cpp", "PantsAsm/include/**.hpp", "Common/include/**.hpp" }
     
 project "PantsVM"
     kind "ConsoleApp"
     language "C++"
-    flags {"C++11"}
-    targetdir "bin/%{cfg.buildcfg}"
+    flags {"C++14"}
+    targetdir "build/bin/%{cfg.buildcfg}"
     libdirs { "SDL2-2.0.4/lib/x64" }
     includedirs { "Common/include", "PantsVM/include", "SDL2-2.0.4/include" }
     links { "SDL2", "SDL2_image", "SDL2_ttf" }
-
     files { "PantsVM/src/**.cpp", "PantsVM/include/**.hpp", "Common/include/**.hpp" }
-    
+
+project "Panth"
+    kind "ConsoleApp"
+    language "C++"
+    flags {"C++14"}
+    targetdir "build/bin/%{cfg.buildcfg}"
+    includedirs {"Panth/include", "ext/fmt", "ext/status_value"}
+    links {"fmt"}
+    files {"Panth/include/**.hpp", "Panth/src/**.cpp"}
+
+-- External dependencies
+project "fmt"
+    kind "StaticLib"
+    language "C++"
+    flags {"C++14"}
+    targetdir "build/lib/%{cfg.buildcfg}"
+    includedirs {"ext/fmt"}
+    files {"ext/fmt/fmt/**.h", "ext/fmt/fmt/**.cc"}
