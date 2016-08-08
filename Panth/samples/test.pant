@@ -1,0 +1,42 @@
+import stdlib;
+
+func range [u32 size] -> u32[]
+    u32[] arr;
+    arr.size = size;
+    auto i = 0;
+    while i < size do
+        arr[i] = i;
+    end
+
+    return arr;
+end
+
+func copy [u8[] mut * a, u8 mut[] * b] -> nil
+    for i in range(a:size) do
+        (*a)[i] = (*b)[i];
+    end
+end
+
+template class pair(T,U) is
+    T t;
+    U u;
+end
+
+template func add(T) [T a, T b] -> auto
+    return a + b;
+end
+
+enum Color is
+    Red, Green, Blue
+end
+
+func entry [] -> u32
+    auto p = new pair!(int,int);
+    p.t = 0;
+    p.u = 12;
+    if p.t == 0 do
+        puts("lol");
+    else do
+        puts("lel");
+    end
+end
