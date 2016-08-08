@@ -41,7 +41,7 @@ project "Panth"
     language "C++"
     flags {"C++14"}
     targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs {"Panth/include", "ext/fmt", "ext/status_value"}
+    includedirs {"Panth/include", "ext/fmt", "ext/status_value", "Common/include"}
     links {"fmt"}
     files {"Panth/include/**.hpp", "Panth/src/**.cpp"}
 
