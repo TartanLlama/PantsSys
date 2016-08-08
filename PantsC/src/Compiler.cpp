@@ -20,14 +20,14 @@ int main(int argc, const char* argv[]) {
 		return -1;	
 	}
    
-	panth::Lexer lexer{ file };
+	pants::Lexer lexer{ file };
 	while (true) {
 		auto token = lexer.Lex();
-		if (token.status() == panth::LexStatus::End) {
+		if (token.status() == pants::LexStatus::End) {
 			break;
 		}
 
-		if (token.status() == panth::LexStatus::Unrecognised) {
+		if (token.status() == pants::LexStatus::Unrecognised) {
 			fmt::print(stderr, "Unrecognised");
 			break;
 		}

@@ -5,7 +5,7 @@
 #include "status_value.hpp"
 #include "Diagnostic.hpp"
 
-namespace panth {
+namespace pants {
 	class LexStatus {
 	public:
 		enum Status { End, Continue, Unrecognised };

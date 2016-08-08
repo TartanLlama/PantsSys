@@ -4,7 +4,7 @@
 
 #include "fmt/format.h"
 
-namespace panth {
+namespace pants {
 	class Token {
 	public:
 		enum Kind {

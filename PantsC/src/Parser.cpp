@@ -3,14 +3,14 @@
 #include "Parser.hpp"
 #include "AST.hpp"
 
-namespace panth {
+namespace pants {
 	Parser::Parser(std::istream& is) :m_is{ is }, m_row{ 0 }, m_col{ 0 } {
 
 	}
 
 	Maybe<char> Parser::getChar() {
 		char c = m_is.get();
-		if (!m_is) return ParseStatus::End;
+		if (!m_is) return{ ParseStatus::End };
 
 		if (c == '\n') {
 			++m_row;
@@ -25,7 +25,7 @@ namespace panth {
 
 	Maybe<bool> Parser::expectChar(char c) {
 		auto got = getChar();
-		if (!got.status()) return ParseStatus::End;
+		if (!got.status()) return{ ParseStatus::End };
 
 		if (got.value() != c) {
 			issueDiagnostic("Expected '{}', got '{}'.", c, got.value());

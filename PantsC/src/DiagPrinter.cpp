@@ -6,7 +6,7 @@
 #include "Parser.hpp"
 
 
-namespace panth {
+namespace pants {
 	void PrintDiags(std::vector<Diagnostic> diags, std::istream& file) {
 		std::sort(diags.begin(), diags.end(), [](auto&& a, auto&& b) {return std::make_tuple(a.row(), a.col()) < std::make_tuple(b.row(), b.col()); });
 
