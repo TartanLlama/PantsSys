@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-namespace panth {
+namespace pants {
 	class Diagnostic;
 
 	void PrintDiags(std::vector<Diagnostic> diags, std::istream& file);

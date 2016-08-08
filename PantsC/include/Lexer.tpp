@@ -2,7 +2,7 @@
 
 #include "DependentFalse.hpp"
 
-namespace panth {
+namespace pants {
     template <char C>
     Lexer::Maybe<Token> Lexer::LexMultiToken() {
         static_assert(DependentFalse<std::integral_constant<char, C>>::value, "Not implemented");	

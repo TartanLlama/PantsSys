@@ -8,10 +8,10 @@ namespace {
 	}
 }
 
-namespace panth {
+namespace pants {
 	Lexer::Maybe<char> Lexer::GetChar() {
 		char c = m_is.get();
-		if (!m_is) return LexStatus::End;
+		if (!m_is) return{ LexStatus::End };
 
 		if (c == '\n') {
 			++m_row;
@@ -26,7 +26,7 @@ namespace panth {
 
 	Lexer::Maybe<char> Lexer::PeekChar() {
 		char c = m_is.peek();
-		if (!m_is) return LexStatus::End;
+		if (!m_is) return{ LexStatus::End };
 
 		return{ LexStatus::Continue, c };
 	}
@@ -154,7 +154,7 @@ namespace panth {
 		EatWhitespace();
 		auto mc = PeekChar();
 		if (mc.status() == LexStatus::End) {
-			return LexStatus::End;
+                      return{ LexStatus::End };
 		}
 
 		auto c = mc.value();
@@ -202,7 +202,7 @@ namespace panth {
 			return LexInt();
 		}
 
-		return LexStatus::Unrecognised;
+		return{ LexStatus::Unrecognised };
 	}
     
 	Lexer::Maybe<Token> Lexer::CheckedMakeToken(Token::Kind kind, const std::string& str) {

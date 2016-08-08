@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace panth {
+namespace pants {
 	enum class BinOpSym {
 		Add, Sub, Mul, Div, Lt, Le, Gt, Ge, Eq
 	};
@@ -78,7 +78,7 @@ namespace panth {
 
 	class AST {
 	public:
-		AST::AST(ASTNodeUP node) : m_node{ std::move(node) } {}
+		AST(ASTNodeUP node) : m_node{ std::move(node) } {}
 	private:
 		ASTNodeUP m_node;
 	};

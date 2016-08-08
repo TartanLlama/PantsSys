@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace panth {
+namespace pants {
 	class Diagnostic {
 	public:
 		Diagnostic(std::size_t row, std::size_t col, std::string text) :

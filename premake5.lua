@@ -36,14 +36,14 @@ project "PantsVM"
     links { "SDL2", "SDL2_image", "SDL2_ttf" }
     files { "PantsVM/src/**.cpp", "PantsVM/include/**.hpp", "Common/include/**.hpp" }
 
-project "Panth"
+project "PantsC"
     kind "ConsoleApp"
     language "C++"
     flags {"C++14"}
     targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs {"Panth/include", "ext/fmt", "ext/status_value", "Common/include"}
+    includedirs {"PantsC/include", "ext/fmt", "ext/status_value", "Common/include"}
     links {"fmt"}
-    files {"Panth/include/**.hpp", "Panth/src/**.cpp"}
+    files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
 
 -- External dependencies
 project "fmt"

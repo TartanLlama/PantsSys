@@ -6,7 +6,7 @@
 #include "status_value.hpp"
 #include "Diagnostic.hpp"
 
-namespace panth {
+namespace pants {
 	class ParseStatus {
 	public:
 		enum Status { End, Continue };
