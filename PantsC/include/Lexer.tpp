@@ -33,6 +33,10 @@ namespace pants {
 		case 's': return CheckedMakeToken(Token::is_, "is");
 		case 'f': return CheckedMakeToken(Token::if_, "if");
 
+		case '8': return CheckedMakeToken(Token::i8_, "i8");
+		case '1': return LexStringToken(Token::i16_, "i16", "i");
+		case '3': return LexStringToken(Token::i32_, "i32", "i");
+
 		case 'm': return LexStringToken(Token::import_, "import", "i");
 
 		default: return LexId("i");
@@ -80,6 +84,22 @@ namespace pants {
 		case 'u': return LexStringToken(Token::func_, "func", "f");
 
 		default: return LexId("f");
+		}
+	}
+
+	template<> 
+	inline Lexer::Maybe<Token> Lexer::LexMultiToken<'c'>() {
+	    (void)GetChar();
+		auto mc = PeekChar();
+		if (!mc.status()) {
+		    return MakeToken(Token::id_, "c");
+		}
+
+		switch (mc.value()) {
+		case 'h': return LexStringToken(Token::char_, "char", "c");
+		case 'l': return LexStringToken(Token::class_, "class", "c");
+		
+		default: return LexId("c");
 		}
 	}
 	
@@ -133,5 +153,23 @@ namespace pants {
 		}
 
 		return MakeToken(Token::gt_);
+	}
+
+	template<>
+	inline Lexer::Maybe<Token> Lexer::LexMultiToken<'u'>() {
+	    (void)GetChar();
+		auto mc = PeekChar();
+
+		if (!mc.status()) {
+		    return MakeToken(Token::id_, "u");
+		}
+
+		switch (mc.value()) {
+		    case '8': return CheckedMakeToken(Token::u8_, "u8");
+		    case '1': return LexStringToken(Token::u16_, "u16", "u");
+		    case '3': return LexStringToken(Token::u32_, "u32", "u");
+
+			default: return LexId("u");
+		}
 	}
 }
