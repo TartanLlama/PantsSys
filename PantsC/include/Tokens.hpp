@@ -15,8 +15,9 @@ namespace pants {
 			assign_,
 			and_, or_, not_,
 			lparen_, rparen_, lsquare_, rsquare_,
-			comma_, arrow_, semi_, dot_, colon_,
-			id_, int_, true_, false_
+			comma_, arrow_, semi_, dot_, colon_, ptr_,
+			id_, int_, true_, false_,
+			u8_, u16_, u32_, i8_, i16_, i32_, bool_, char_
 		};
 
 		Token(const Token& rhs)
@@ -89,6 +90,7 @@ namespace pants {
 				case lsquare_: return "lsquare"; 
 				case rsquare_: return "rsquare";
 				case comma_: return "comma"; 
+				case ptr_: return "ptr";
 				case arrow_: return "arrow"; 
 				case semi_: return "semi"; 
 				case dot_: return "dot"; 
@@ -97,6 +99,14 @@ namespace pants {
 				case int_: return fmt::format("int({})", m_int); 
 				case true_: return "true";
 				case false_: return "false";
+				case u8_: return "u8";
+				case u16_: return "u16";
+				case u32_: return "u32";
+				case i8_: return "i8";
+				case i16_: return "i16";
+				case i32_: return "i32";
+				case char_: return "char";
+				case bool_: return "bool";
 				default: assert(false);
 			}
 		}

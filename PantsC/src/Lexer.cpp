@@ -177,16 +177,18 @@ namespace pants {
 		case 'a': return LexStringToken(Token::and_, "and");
 		case 'o': return LexStringToken(Token::or_, "or");
 		case 'n': return LexStringToken(Token::not_, "not");
-		case 'i': return LexMultiToken<'i'>(); // import in is if
-		case 'f': return LexMultiToken<'f'>(); //"func, for, false"
-		case 'e': return LexMultiToken<'e'>(); // "enum, else, end"
-		case 'c': return LexStringToken(Token::class_, "class");
-		case 't': return LexMultiToken<'t'>(); // "template, true"
+		case 'i': return LexMultiToken<'i'>(); // import in is if i8 i16 i32
+		case 'f': return LexMultiToken<'f'>(); // func for false
+		case 'e': return LexMultiToken<'e'>(); // enum else end
+		case 'c': return LexMultiToken<'c'>(); // class char
+		case 't': return LexMultiToken<'t'>(); // template true
 		case 'd': return LexStringToken(Token::do_, "do");
+		case 'b': return LexStringToken(Token::bool_, "bool");
+		case 'u': return LexMultiToken<'u'>(); // u8 u16 u32
 
-		case '>': return LexMultiToken<'>'>(); // "> >="
-		case '<': return LexMultiToken<'<'>(); // "< <="
-		case '=': return LexMultiToken<'='>(); // "= =="
+		case '>': return LexMultiToken<'>'>(); // > >=
+		case '<': return LexMultiToken<'<'>(); // < <=
+		case '=': return LexMultiToken<'='>(); // = ==
 
 		case '0': return LexHex();
 
@@ -208,7 +210,7 @@ namespace pants {
 	Lexer::Maybe<Token> Lexer::CheckedMakeToken(Token::Kind kind, const std::string& str) {
 		(void)GetChar();
 		auto mc = PeekChar();
-		if (mc.status() && isalpha(mc.value())) {
+		if (mc.status() && isalnum(mc.value())) {
 			return LexId(str);
 		}
 		return MakeToken(kind);
