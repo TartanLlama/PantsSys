@@ -151,6 +151,16 @@ namespace pants {
 	}
 
 	Lexer::Maybe<Token> Lexer::Lex() {
+		auto tok = LexImpl();
+		
+        #ifdef TRACE_LEXING
+		fmt::print("Lexed {}\n", token.value().ToString());
+        #endif
+
+		return tok;
+	}
+
+	Lexer::Maybe<Token> Lexer::LexImpl() {
 		EatWhitespace();
 		auto mc = PeekChar();
 		if (mc.status() == LexStatus::End) {

@@ -58,6 +58,11 @@ namespace pants {
 			: m_kind{ kind }, m_row{ row }, m_col{ col }, m_string{ data }
 		{}
 
+		operator Kind() { return m_kind; }
+		Kind Type() { return m_kind; }
+		std::size_t Row() { return m_row; }
+		std::size_t Col() { return m_col; }
+
 		std::string ToString() {
 			switch (m_kind) {
 				case import_: return "import"; 

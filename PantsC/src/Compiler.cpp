@@ -21,16 +21,10 @@ int main(int argc, const char* argv[]) {
 	}
    
 	pants::Lexer lexer{ file };
-	while (true) {
-		auto token = lexer.Lex();
-		if (token.status() == pants::LexStatus::End) {
-			break;
-		}
+	pants::Parser parser{ lexer };
+	parser.Parse();
 
-		if (token.status() == pants::LexStatus::Unrecognised) {
-			fmt::print(stderr, "Unrecognised");
-			break;
-		}
-		fmt::print("{}\n", token.value().ToString());
-	}
+	file.close();
+	file.open(file_name);
+	pants::PrintDiags(parser.diags(), file);
 }
