@@ -45,6 +45,7 @@ project "PantsC"
     links {"fmt"}
     files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
 
+include "PantsFS"
 -- External dependencies
 project "fmt"
     kind "StaticLib"

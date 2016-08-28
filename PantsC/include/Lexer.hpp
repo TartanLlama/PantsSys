@@ -30,6 +30,8 @@ namespace pants {
 		Maybe<Token> Lex();
 		const std::vector<Diagnostic>& diags() const { return m_diags; }
 	private:
+		Maybe<Token> LexImpl();
+
 		Maybe<char> GetChar();
 		Maybe<char> PeekChar();
 		void UngetChar() { m_is.unget(); }

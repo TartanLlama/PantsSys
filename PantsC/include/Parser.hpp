@@ -5,6 +5,7 @@
 #include "fmt/format.h"
 #include "status_value.hpp"
 #include "Diagnostic.hpp"
+#include "Lexer.hpp"
 
 namespace pants {
 	class ParseStatus {
@@ -25,23 +26,25 @@ namespace pants {
 
 	class Parser {
 	public:
-		Parser(std::istream& is);
-		AST parse();
+		Parser(Lexer& lexer);
+		AST Parse();
 
 		Maybe<char> getChar();
-		Maybe<bool> expectChar(char c);
+		Maybe<bool> ExpectToken(Token::Kind k);
 
 		const std::vector<Diagnostic>& diags() const { return m_diags; }
 
 		template <typename... Ts>
-		void issueDiagnostic(const std::string& fmt_str, const Ts&... ts) {
-			m_diags.emplace_back(m_row, m_col, fmt::format(fmt_str, ts...));
+		void IssueDiagnostic(Token tok, const std::string& fmt_str, const Ts&... ts) {
+			m_diags.emplace_back(tok.Row(), tok.Col(), fmt::format(fmt_str, ts...));
 		}
 	private:
-		Maybe<ASTNodeUP> parseNode();
+		Maybe<ASTNodeUP> ParseTopLevelDecl();
+		Maybe<ASTNodeUP> ParseFunc();
 
-		std::istream& m_is;
-		std::size_t m_row, m_col;
+		Lexer::Maybe<Token> Lex();
+
+		Lexer& m_lexer;
 		std::vector<Diagnostic> m_diags;
 	};
 }
