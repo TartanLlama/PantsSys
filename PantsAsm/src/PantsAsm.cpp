@@ -4,6 +4,7 @@
 
 #include "PantsIsa.hpp"
 
+using namespace pants;
 void emit (std::vector<char>& buf, uint32_t i) {
     buf.push_back((char)i);
     buf.push_back((char)i>>8);
