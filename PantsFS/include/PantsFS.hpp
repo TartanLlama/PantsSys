@@ -81,6 +81,12 @@ namespace pants {
 		return block_group_id * g_pantsfs_blocks_per_block_group + g_pantsfs_first_block_group_block_id;
 	}
 
+	uint32_t ByteFromMetafileID (uint32_t metafile_id) {
+		uint32_t block_group_id = BlockGroupIDFromMetafileID(metafile_id);
+		uint32_t block_group_block_id = BlockIDFromBlockGroupID(block_group_id);
+        
+	}
+
 	uint32_t NextUnusedBlock(std::istream& is, uint32_t block_id, bool can_allocate=false) {
 		is.seekg(ByteFromBlockID(block_id));
 		uint32_t prev, next;

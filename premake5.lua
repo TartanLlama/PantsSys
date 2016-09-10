@@ -23,19 +23,9 @@ project "PantsAsm"
     language "C++"
     flags {"C++14"}
     targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs { "Common/include", "PantsAsm/include" }
-    files { "PantsAsm/src/**.cpp", "PantsAsm/include/**.hpp", "Common/include/**.hpp" }
+    includedirs { "Common/include", "PantsAsm/include", "ext/catch" }
+    files { "PantsAsm/src/**.cpp", "PantsAsm/include/**.hpp", "Common/include/**.hpp", "Common/src/**.cpp"}
     
-project "PantsVM"
-    kind "ConsoleApp"
-    language "C++"
-    flags {"C++14"}
-    targetdir "build/bin/%{cfg.buildcfg}"
-    libdirs { "SDL2-2.0.4/lib/x64" }
-    includedirs { "Common/include", "PantsVM/include", "SDL2-2.0.4/include" }
-    links { "SDL2", "SDL2_image", "SDL2_ttf" }
-    files { "PantsVM/src/**.cpp", "PantsVM/include/**.hpp", "Common/include/**.hpp" }
-
 project "PantsC"
     kind "ConsoleApp"
     language "C++"
@@ -46,6 +36,7 @@ project "PantsC"
     files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
 
 include "PantsFS"
+include "PantsEmu"
 -- External dependencies
 project "fmt"
     kind "StaticLib"
