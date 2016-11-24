@@ -1,9 +1,9 @@
 import stdlib;
 
-func range [u32 size] -> u32[]
+func range [u32 size] -> u32[] is
     u32[] arr;
     arr.size = size;
-    auto i = 0;
+    i32 i = 0;
     while i < size do
         arr[i] = i;
     end
@@ -11,7 +11,7 @@ func range [u32 size] -> u32[]
     return arr;
 end
 
-func copy [u8[] mut * a, u8 mut[] * b] -> nil
+func copy [u8[] mut * a, u8 mut[] * b] -> nil is
     for i in range(a:size) do
         (*a)[i] = (*b)[i];
     end
@@ -22,7 +22,7 @@ template class pair(T,U) is
     U u;
 end
 
-template func add(T) [T a, T b] -> auto
+template func add(T) [T a, T b] -> auto is
     return a + b;
 end
 
@@ -30,7 +30,7 @@ enum Color is
     Red, Green, Blue
 end
 
-func entry [] -> u32
+func entry [] -> u32 is
     auto p = new pair!(int,int);
     p.t = 0;
     p.u = 12;

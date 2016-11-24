@@ -87,7 +87,7 @@ class status_value
 public:
     typedef S status_type;
     typedef V value_type;
-    
+
     // Construction of status_value must include a status.
 
     status_value() = delete;
@@ -95,20 +95,20 @@ public:
     // Construction of a status_value can be done with or without a value.
 
     status_value( status_type const & s )
-    : m_status( s ) 
-    , m_has_value( false ) 
+    : m_status( s )
+    , m_has_value( false )
     {}
-    
+
     status_value( status_type const & s, value_type && v )
-    : m_status( s ) 
-    , m_has_value( true ) 
+    : m_status( s )
+    , m_has_value( true )
     {
         contained.construct_value( std::move( v ) );
     }
-            
+
     status_value(  status_type const & s, value_type const & v )
-    : m_status( s ) 
-    , m_has_value( true ) 
+    : m_status( s )
+    , m_has_value( true )
     {
         contained.construct_value( v );
     }
@@ -121,15 +121,14 @@ public:
         }
     }
 
-    // A status_value may be moved. 
-    // A copy operation would make the type unusable for non-copyable 
+    // A status_value may be moved.
+    // A copy operation would make the type unusable for non-copyable
     // contained objects, so we do not provide a copy operation.
-
     status_value( status_value && other )
     : m_status   ( std::move( other.m_status ) )
-    , m_has_value( other.m_has_value ) 
+    , m_has_value( other.m_has_value )
     {
-        if ( other.m_has_value ) 
+        if ( other.m_has_value )
         {
             contained.construct_value( std::move( other.contained.value() ) );
             other.contained.destruct_value();
@@ -137,7 +136,17 @@ public:
         }
     }
 
-    // They may be queried for status. The design assumes that inlining 
+    status_value( const status_value & other )
+    : m_status   ( other.m_status  )
+    , m_has_value( other.m_has_value )
+    {
+        if ( other.m_has_value )
+        {
+            contained.construct_value( other.contained.value() );
+        }
+    }
+
+    // They may be queried for status. The design assumes that inlining
     // will remove the cost of returning a reference for cheap copyable types.
 
     status_type const & status() const
@@ -151,48 +160,48 @@ public:
     {
         return m_has_value;
     }
-    
+
     operator bool() const
     {
         return has_value();
     }
 
-    // They may provide access to their value. 
-    // If they have no value, an exception of type Status, 
+    // They may provide access to their value.
+    // If they have no value, an exception of type Status,
     // the status value passed to the constructor, is thrown.
 
     value_type const & value() const
     {
         if ( m_has_value )
             return contained.value();
-            
+
         throw status_type( m_status );
     }
-    
+
     value_type & value()
     {
         if ( m_has_value )
             return contained.value();
-            
+
         throw status_type( m_status );
     }
-    
+
     value_type const & operator *() const
     {
         return value();
     }
-    
+
     value_type & operator *()
     {
         return value();
     }
 
-    // This design enables moving out of the class by 
-    // calling std::move on the result of the non-const functions. 
+    // This design enables moving out of the class by
+    // calling std::move on the result of the non-const functions.
 
 private:
     using storage_type = status_value_detail::storage_t<status_type, value_type >;
-    
+
     storage_type contained;
     status_type m_status;
     bool m_has_value;

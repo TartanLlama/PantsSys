@@ -25,13 +25,13 @@ project "PantsAsm"
     targetdir "build/bin/%{cfg.buildcfg}"
     includedirs { "Common/include", "PantsAsm/include", "ext/catch" }
     files { "PantsAsm/src/**.cpp", "PantsAsm/include/**.hpp", "Common/include/**.hpp", "Common/src/**.cpp"}
-    
+
 project "PantsC"
     kind "ConsoleApp"
     language "C++"
     flags {"C++14"}
     targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs {"PantsC/include", "ext/fmt", "ext/status_value", "Common/include"}
+    includedirs {"PantsC/include", "ext/fmt", "ext", "Common/include"}
     links {"fmt"}
     files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
 
