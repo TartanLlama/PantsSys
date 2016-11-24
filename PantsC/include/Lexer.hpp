@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <stack>
 
 #include "Tokens.hpp"
 #include "status_value.hpp"
@@ -28,6 +29,7 @@ namespace pants {
             : m_is{ is }, m_row{ 0 }, m_col{ 0 }
         {}
         Maybe<Token> Lex();
+        Maybe<Token> Peek();
         const std::vector<Diagnostic>& diags() const { return m_diags; }
     private:
         Maybe<Token> LexImpl();
@@ -62,6 +64,7 @@ namespace pants {
         }
 
         std::vector<Diagnostic> m_diags;
+        std::stack<Maybe<Token>> m_peeked;
     };
 }
 

@@ -150,7 +150,25 @@ namespace pants {
         return CheckedMakeToken(kind, str);
     }
 
+    Lexer::Maybe<Token> Lexer::Peek() {
+        auto tok = LexImpl();
+
+#ifdef TRACE_LEXING
+        fmt::print("Lexed {}\n", token.value().ToString());
+#endif
+
+        m_peeked.push(tok);
+
+        return tok;
+    }
+
     Lexer::Maybe<Token> Lexer::Lex() {
+        if (!m_peeked.empty()) {
+            auto peeked = m_peeked.top();
+            m_peeked.pop();
+            return peeked;
+        }
+
         auto tok = LexImpl();
 
 #ifdef TRACE_LEXING
@@ -187,6 +205,8 @@ namespace pants {
         case 'a': return LexStringToken(Token::and_, "and");
         case 'o': return LexStringToken(Token::or_, "or");
         case 'n': return LexStringToken(Token::not_, "not");
+        case 'w': return LexStringToken(Token::while_, "while");
+        case 'r': return LexStringToken(Token::return_, "return");
         case 'i': return LexMultiToken<'i'>(); // import in is if i8 i16 i32
         case 'f': return LexMultiToken<'f'>(); // func for false
         case 'e': return LexMultiToken<'e'>(); // enum else end

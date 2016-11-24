@@ -41,6 +41,13 @@ namespace pants {
     private:
         Maybe<ASTNodeUP> ParseTopLevelDecl();
         Maybe<ASTNodeUP> ParseFunc();
+        Maybe<ASTNodeUP> ParseFor();
+        Maybe<ASTNodeUP> ParseWhile();
+        Maybe<Return> ParseReturn();
+        Maybe<ASTNodeUP> ParseStatement();
+        Maybe<Id> ParseType();
+
+        bool IsType(Token tok);
 
         Lexer::Maybe<Token> Lex();
 

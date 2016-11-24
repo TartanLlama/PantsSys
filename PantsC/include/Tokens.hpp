@@ -1,18 +1,20 @@
 #pragma once
 #include <string>
 #include <cassert>
+#include <stdexcept>
 
 #include "fmt/format.h"
+#include "optional.hpp"
 
 namespace pants {
     class Token {
     public:
         enum Kind {
             import_, func_, enum_, class_, template_,
-            in_, is_, for_, if_, else_, do_, end_,
+            in_, is_, for_, while_, if_, else_, do_, end_,
             add_, min_, div_, mul_,
             lt_, le_, gt_, ge_, eq_,
-            assign_,
+            assign_, return_,
             and_, or_, not_,
             lparen_, rparen_, lsquare_, rsquare_,
             comma_, arrow_, semi_, dot_, colon_, ptr_,
@@ -58,6 +60,21 @@ namespace pants {
             : m_kind{ kind }, m_row{ row }, m_col{ col }, m_string{ data }
         {}
 
+        util::optional<std::string> String() {
+            if (m_kind != id_) {
+                return {};
+            }
+            return m_string;
+        }
+
+        util::optional<int> Int() {
+            if (m_kind != int_) {
+                return {};
+            }
+            return m_int;
+
+        }
+
         operator Kind() { return m_kind; }
         Kind Type() { return m_kind; }
         std::size_t Row() { return m_row; }
@@ -73,6 +90,7 @@ namespace pants {
             case in_: return "in";
             case is_: return "is";
             case for_: return "for";
+            case while_: return "while";
             case if_: return "if";
             case else_: return "else";
             case do_: return "do";
@@ -87,6 +105,7 @@ namespace pants {
             case ge_: return "ge";
             case eq_: return "eq";
             case assign_: return "assign";
+            case return_: return "return";
             case and_: return "and";
             case or_: return "or";
             case not_: return "not";

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Type.hpp"
+#include "Tokens.hpp"
 
 namespace pants {
     enum class BinOpSym {
@@ -15,12 +16,18 @@ namespace pants {
             };
 
     class ASTNode {
+    public:
+        explicit ASTNode(Token tok) : m_tok{tok} {}
+    protected:
         Token m_tok;
     };
 
     using ASTNodeUP = std::unique_ptr<ASTNode>;
 
     class Id : public ASTNode {
+    public:
+        Id(Token tok) : ASTNode{tok} {}
+        std::string String() { return m_tok.String().value(); }
     };
 
     class VarDecl : public ASTNode {
@@ -31,6 +38,12 @@ namespace pants {
 
     class FuncDecl : public ASTNode
     {
+    public:
+        FuncDecl(Token tok, Id name, Id type, std::vector<VarDeclUP> params, std::vector<ASTNodeUP> body) :
+            ASTNode{tok}, m_name{name}, m_type{type}, m_params{std::move(params)}, m_body{std::move(body)}
+        {}
+
+    private:
         Id m_name;
         Id m_type;
         std::vector<VarDeclUP> m_params;
@@ -59,12 +72,23 @@ namespace pants {
         std::vector<ASTNodeUP> m_body;
     };
 
-    class BinaryOp : public ASTNode
+    class Expr : public ASTNode{};
+    using ExprUP = std::unique_ptr<Expr>;
+
+    class BinaryOp : public Expr
     {
         ASTNodeUP m_lhs;
         ASTNodeUP m_rhs;
         BinOpSym m_op;
     };
+
+    class UnaryOp : public Expr
+    {
+        ASTNodeUP m_lhs;
+        ASTNodeUP m_rhs;
+        BinOpSym m_op;
+    };
+
 
     class Assign : public ASTNode {
         ASTNodeUP lhs;
@@ -79,12 +103,20 @@ namespace pants {
         std::vector<ASTNodeUP> m_else;
     };
 
-    class Call : public ASTNode
+    class Call : public Expr
     {
     private:
         FuncDecl& m_func;
         std::vector<ASTNodeUP> m_args;
     };
+
+    class Return : public ASTNode
+    {
+    private:
+        FuncDecl& m_func;
+        std::vector<ExprUP> m_args;
+    };
+
 
     class AST {
     public:
