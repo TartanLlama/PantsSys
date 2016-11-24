@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace pants {
-	class Diagnostic;
+    class Diagnostic;
 
-	void PrintDiags(std::vector<Diagnostic> diags, std::istream& file);
+    void PrintDiags(std::vector<Diagnostic> diags, std::istream& file);
 }
