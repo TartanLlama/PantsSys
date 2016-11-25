@@ -22,6 +22,7 @@ include "PantsAsm"
 include "PantsC"
 include "PantsFS"
 include "PantsSim"
+
 -- External dependencies
 project "fmt"
     kind "StaticLib"
