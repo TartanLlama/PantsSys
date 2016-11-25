@@ -18,14 +18,7 @@ filter "configurations:Debug"
       defines { "NDEBUG" }
       optimize "On"
 
-project "PantsAsm"
-    kind "ConsoleApp"
-    language "C++"
-    flags {"C++14"}
-    targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs { "Common/include", "PantsAsm/include", "ext/catch" }
-    files { "PantsAsm/src/**.cpp", "PantsAsm/include/**.hpp", "Common/include/**.hpp", "Common/src/**.cpp"}
-
+include "PantsAsm"
 project "PantsC"
     kind "ConsoleApp"
     language "C++"
@@ -36,7 +29,7 @@ project "PantsC"
     files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
 
 include "PantsFS"
-include "PantsEmu"
+include "PantsSim"
 -- External dependencies
 project "fmt"
     kind "StaticLib"
