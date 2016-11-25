@@ -38,3 +38,18 @@ project "fmt"
     targetdir "build/lib/%{cfg.buildcfg}"
     includedirs {"ext/fmt"}
     files {"ext/fmt/fmt/**.h", "ext/fmt/fmt/**.cc"}
+
+
+-- Clean Function --
+newaction {
+   trigger     = "clean",
+   description = "clean the software",
+   execute     = function ()
+      print("clean the build...")
+      os.rmdir("./build")
+      os.rmdir("./obj")
+      os.execute("rm *.make")
+      os.execute("Makefile")
+      print("done.")
+   end
+}    
