@@ -19,15 +19,7 @@ filter "configurations:Debug"
       optimize "On"
 
 include "PantsAsm"
-project "PantsC"
-    kind "ConsoleApp"
-    language "C++"
-    flags {"C++14"}
-    targetdir "build/bin/%{cfg.buildcfg}"
-    includedirs {"PantsC/include", "ext/fmt", "ext", "Common/include"}
-    links {"fmt"}
-    files {"PantsC/include/**.hpp", "PantsC/src/**.cpp"}
-
+include "PantsC"
 include "PantsFS"
 include "PantsSim"
 -- External dependencies
