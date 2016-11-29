@@ -2,6 +2,13 @@ language: cpp
 compiler: clang
 os: linux
 
+git:
+  submodules: false
+
+before_install:
+    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
+
 before_script:
   - git clone https://github.com/sbx320/premake5-travis.git
   - ./premake5-travis/premake5 gmake
