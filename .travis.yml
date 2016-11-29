@@ -20,5 +20,7 @@ before_script:
   - ./premake5-travis/premake5 gmake
 
 script:
+  - ls
+  - pwd
   - make config=$CONFIG
 
