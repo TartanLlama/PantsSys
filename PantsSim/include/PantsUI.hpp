@@ -11,7 +11,7 @@
 #include <iostream>
 
 namespace pants {
-	namespace emu {
+	namespace sim {
 		class PantsUI {
 		public:
 			~PantsUI() {
@@ -36,7 +36,7 @@ namespace pants {
 			PantsUI() : m_window(nullptr), m_surface(nullptr), m_texture(nullptr), m_font(nullptr), m_renderer(nullptr) {
 				SDL_Init(SDL_INIT_VIDEO);
 
-				m_window = SDL_CreateWindow("PantsEmu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
+				m_window = SDL_CreateWindow("PantsSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 				if (!m_window) {
 					std::cerr << SDL_GetError();
 					throw std::runtime_error{ std::string{"Unable to create window: "}.append(SDL_GetError()) };

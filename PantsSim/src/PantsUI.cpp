@@ -5,7 +5,7 @@
 #include "PantsEnc.hpp"
 
 namespace pants {
-	namespace emu {
+	namespace sim {
 		void PantsUI::redraw(const std::array<char, mem_size>& mem) {
 			SDL_Color white = { 0,0,0 };
 			SDL_Color black = { 0xff,0xff,0xff };

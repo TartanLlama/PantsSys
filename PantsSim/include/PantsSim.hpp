@@ -6,7 +6,7 @@
 #include "Config.hpp"
 
 namespace pants {
-	namespace emu {
+	namespace sim {
 		class PantsUI;
 
 		class RegisterSet {
@@ -61,7 +61,7 @@ namespace pants {
 		};
 
 		using Memory = std::array<char, mem_size>;
-		
+
 		struct Instruction {
 			Opcode opcode;
 			uint16_t target_reg;
