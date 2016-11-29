@@ -1,15 +1,1 @@
 [submodule "fmt"]
-	path = ext/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "PantsAsm"]
-	path = PantsAsm
-	url = git@github.com:TartanLlama/PantsAsm.git
-[submodule "PantsFS"]
-	path = PantsFS
-	url = git@github.com:TartanLlama/PantsFS.git
-[submodule "PantsSim"]
-	path = PantsSim
-	url = git@github.com:TartanLlama/PantsSim.git
-[submodule "PantsC"]
-	path = PantsC
-	url = git@github.com:TartanLlama/PantsC.git

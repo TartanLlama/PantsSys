@@ -1,0 +1,12 @@
+func puts [char* str] -> nil is
+    char* mem = 0x0;
+    while str != '\0' do
+        *mem = *str;
+        mem += 1;
+        str += 1;
+    end
+end
+
+func entry [] -> i32 is
+    puts("Hello world");
+end    

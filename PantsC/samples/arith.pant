@@ -1,0 +1,3 @@
+func entry [] -> nil is
+    1 + 42;
+end
