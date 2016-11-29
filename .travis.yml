@@ -1,0 +1,14 @@
+language: cpp
+compiler: clang
+os: linux
+
+before_script:
+  - git clone https://github.com/sbx320/premake5-travis.git
+  - ./premake5-travis/premake5 gmake
+
+script:
+  - make config=${CONFIG}
+
+env:
+  - CONFIG=linux_debug
+  - CONFIG=linux_release
