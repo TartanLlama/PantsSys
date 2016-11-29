@@ -4,6 +4,7 @@ project "PantsSim"
     flags {"C++14"}
     targetdir "../build/bin/%{cfg.buildcfg}"
     libdirs { "../SDL2-2.0.4/lib/x64" }
+    prebuildcommands {"cp -R PantsSim/assets/* build/bin/%{cfg.buildcfg}"}
     includedirs { "../Common/include", "include", "../SDL2-2.0.4/include" }
     links { "SDL2", "SDL2_image", "SDL2_ttf" }
     files { "src/**.cpp", "include/**.hpp", "include/**.hpp", "../Common/src/**.cpp" }
