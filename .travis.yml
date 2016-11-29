@@ -24,8 +24,5 @@ before_script:
   - ./premake5-travis/premake5 gmake
 
 script:
-  - ls
-  - pwd
-  - cat Makefile
-  - make PantsAsm
+  - make all
 
