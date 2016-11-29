@@ -19,76 +19,95 @@ namespace pants {
 		uint16_t low16(uint32_t i) {
 			return i & 0x00ff;
 		}
+		
+		uint8_t high8(uint16_t i) {
+			return i >> 8;
+		}
 
-		std::pair<Opcode, uint32_t> fetch(const RegisterSet& regs, const Memory& mem) {
+		uint8_t low8(uint16_t i) {
+			return i & 0x0f;
+		}
+
+		Instruction fetch(const RegisterSet& regs, const Memory& mem) {
 			const char* pc = mem.data() + regs.pc();
 
-			uint32_t opcode, operands;
-			std::copy(pc, pc + 4, reinterpret_cast<char*>(&opcode));
-			std::copy(pc + 4, pc + 8, reinterpret_cast<char*>(&operands));
-
-			Opcode op = static_cast<Opcode>(opcode);
-
-			return{ op, operands };
+			Instruction inst{};
+			std::copy(pc, (pc + sizeof(uint16_t)), reinterpret_cast<char*>(&inst.opcode));
+			pc += sizeof(uint16_t);
+			std::copy(pc, (pc + sizeof(uint16_t)), reinterpret_cast<char*>(&inst.target_reg));
+			pc += sizeof(uint16_t);
+			std::copy(pc, (pc + sizeof(uint32_t)), reinterpret_cast<char*>(&inst.operands));
+			return inst;
 		}
 
 		bool execute(const Instruction& inst, RegisterSet& regs, Memory& mem, PantsUI& ui) {
-			Opcode op = inst.first;
-			uint32_t operands = inst.second;
+			Opcode op = inst.opcode;
+			uint16_t target = inst.target_reg;
+			uint32_t operands = inst.operands;
 
 			switch (op) {
-			case Opcode::addi:
+			case Opcode::add_:
 				if (regs.sn())
-					regs.rs() = uint64_t(int64_t(regs.get(high16(operands))) + int64_t(regs.get(low16(operands))));
+					regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) + int32_t(regs.get(low16(operands))));
 				else
-					regs.rs() = regs.get(high16(operands)) + regs.get(low16(operands));
+					regs.get(target) = regs.get(high16(operands)) + regs.get(low16(operands));
 				break;
-			case Opcode::subi: regs.rs() = regs.get(high16(operands)) - regs.get(low16(operands)); break;
-			case Opcode::muli:
+			case Opcode::sub_:
 				if (regs.sn())
-					regs.rs() = uint64_t(int64_t(regs.get(high16(operands))) * int64_t(regs.get(low16(operands))));
+					regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) - int32_t(regs.get(low16(operands))));
 				else
-					regs.rs() = regs.get(high16(operands)) * regs.get(low16(operands));
+					regs.get(target) = regs.get(high16(operands)) - regs.get(low16(operands));
+				break;
+			case Opcode::mul_:
+				if (regs.sn())
+					regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) * int32_t(regs.get(low16(operands))));
+				else
+					regs.get(target) = regs.get(high16(operands)) * regs.get(low16(operands));
 				break;
 
-			case Opcode::divi: regs.rs() = regs.get(high16(operands)) / regs.get(low16(operands)); break;
-
-			case Opcode::setlowi: regs.rs() = (regs.rs() & (0xffffffff00000000)) + operands; break;
-			case Opcode::sethighi: regs.rs() = (regs.rs() & (0x00000000ffffffff)) + (uint64_t(operands) << 32); break;
-
-			case Opcode::comparei:
+			case Opcode::div_: 
+				if (regs.sn())
+					regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) / int32_t(regs.get(low16(operands))));
+				else
+					regs.get(target) = regs.get(high16(operands)) / regs.get(low16(operands));
+				break; 
+			case Opcode::set_: regs.get(target) = operands; break;
+			case Opcode::compare_:
 			{
 				auto a = regs.get(high16(operands)), b = regs.get(low16(operands));
-				if (a > b) regs.rs() = 2;
-				else if (a < b) regs.rs() = 0;
-				else regs.rs() = 1;
+				if (a > b) regs.get(target) = 2;
+				else if (a < b) regs.get(target) = 0;
+				else regs.get(target) = 1;
 
 				break;
 			}
 
-			case Opcode::branchi:
+			case Opcode::branch_:
 				if (regs.get(high16(operands))) {
 					regs.pc() = regs.me() + code_offset;
 					return true;
 				}
 				break;
 
-			case Opcode::storei:
+			case Opcode::store_:
 			{
 				auto ptr = mem.data() + regs.me();
-				auto val = regs.get(low16(operands));
-				std::copy(reinterpret_cast<unsigned char*>(&val), reinterpret_cast<unsigned char*>(&val) + sizeof(decltype(val)), ptr);
+				
+				std::copy(reinterpret_cast<unsigned char*>(&operands), 
+					reinterpret_cast<unsigned char*>(&operands) + sizeof(operands), ptr);
 				if (regs.me() < vga_width * vga_height) {
 					ui.redraw(mem);
 				}
 				break;
 			}
 
-			case Opcode::copyi: regs.get(high16(operands)) = regs.get(low16(operands)); break;
-			case Opcode::jumpi: regs.pc() = regs.me() + code_offset; return true;
+			case Opcode::copy_: regs.get(high16(operands)) = regs.get(low16(operands)); break;
+			case Opcode::call_: regs.ra() = regs.pc() + 8; //FALLTHROUGH
+			case Opcode::jump_: regs.pc() = regs.me() + code_offset; return true;
+			 
 
-			case Opcode::halti: return false;
-			default: std::cerr << "Bad opcode" << static_cast<uint32_t>(op); abort(); break;
+			case Opcode::halt_: return false;
+			default: std::cerr << "Bad opcode" << static_cast<uint16_t>(op); abort(); break;
 			}
 
 			regs.pc() += 8;

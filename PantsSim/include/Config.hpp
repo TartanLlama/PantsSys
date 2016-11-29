@@ -15,7 +15,7 @@ namespace pants {
 
 		constexpr size_t code_offset = vga_size;
 
-		const std::string font_path = "C:\\\\Users\\Simon\\Documents/PantsSys/PantsVM/assets/Inconsolata-g.ttf";
+		const std::string font_path = "C:\\\\Users\\Simon\\Documents/PantsSys/PantsEmu/assets/Inconsolata-g.ttf";
 		constexpr size_t font_size = 12;
 	}
 }
