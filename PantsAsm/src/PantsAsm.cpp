@@ -51,7 +51,7 @@ uint32_t emitU32 (std::vector<char>& buf, std::istream& is, LabelFixups& fixups)
     std::string s;
     is >> s;
 
-    if (s[0] == '.' || s[0] == '#') {
+    if (s[0] == '.') {
         fixups[s] = buf.size();
         emit(buf, uint32_t{0});
         return 0;
@@ -70,22 +70,12 @@ void applyFixups (std::vector<char>& code, const Labels& labels, const LabelFixu
     for (auto fixup : fixups) {
         auto addr = fixup.second;
         std::string label {fixup.first, 1};
-        auto low = fixup.first[0] == '.';
 
-        if (low) {
-            auto val = uint32_t(labels.at(label));
-            code[addr] = ((char)val);
-            code[addr+1] = ((char)val>>8);
-            code[addr+2] = ((char)val>>16);
-            code[addr+3] = ((char)val>>24);
-        }
-        else {
-            auto val = uint32_t(labels.at(label) >> 32);
-            code[addr] = ((char)val);
-            code[addr+1] = ((char)val>>8);
-            code[addr+2] = ((char)val>>16);
-            code[addr+3] = ((char)val>>24);
-        }
+        auto val = uint32_t(labels.at(label));
+        code[addr] = ((char)val);
+        code[addr+1] = ((char)val>>8);
+        code[addr+2] = ((char)val>>16);
+        code[addr+3] = ((char)val>>24);
     }
 }
 
@@ -95,7 +85,7 @@ void assemble (std::istream& is) {
 
     uint64_t addr = 0;
     std::vector<char> code{};
-        
+
     while (true) {
         std::string text;
         is >> text;
@@ -110,33 +100,32 @@ void assemble (std::istream& is) {
         }
         else {
             auto op = getOpcode(text);
-            emit(code, static_cast<uint32_t>(op));
-        
+            emit(code, static_cast<uint16_t>(op));
+
             switch(op) {
-            case Opcode::addi: 
-            case Opcode::subi:
-            case Opcode::muli:
-            case Opcode::divi:
-            case Opcode::andi:
-            case Opcode::ori:
-            case Opcode::copyi:
-            case Opcode::comparei:
-                emitReg(code, is); emitReg(code, is); break;
+            case Opcode::add_:
+            case Opcode::sub_:
+            case Opcode::mul_:
+            case Opcode::div_:
+            case Opcode::and_:
+            case Opcode::or_:
+            case Opcode::copy_:
+            case Opcode::compare_:
+                emitReg(code, is); emitReg(code, is); emitReg(code, is); break;
 
-            case Opcode::noti:
-            case Opcode::loadi:
-            case Opcode::storei:
-            case Opcode::branchi:
-                emitReg(code, is); emit(code, uint16_t{0}); break;
-            
-            case Opcode::setlowi:
-            case Opcode::sethighi:
-                emitU32(code, is, label_fixups); break;
+            case Opcode::not_:
+            case Opcode::load_:
+            case Opcode::store_:
+            case Opcode::branch_:
+                emit(code, uint16_t{0}); emitReg(code, is); emit(code, uint16_t{0}); break;
 
-            case Opcode::jumpi:
-            case Opcode::halti:
-                emit(code, uint32_t{0}); break;
-            
+            case Opcode::set_:
+                emitReg(code, is); emitU32(code, is, label_fixups); break;
+
+            case Opcode::jump_:
+            case Opcode::halt_:
+                emit(code, uint16_t{0}); emit(code, uint32_t{0}); break;
+
             default: std::cerr << "Unhandled opcode " << static_cast<uint16_t>(op); abort(); break;
             }
 
@@ -147,6 +136,6 @@ void assemble (std::istream& is) {
 
 int main() {
     std::istream& is = std::cin;
-    
+
     assemble(is);
 }
