@@ -1,6 +1,7 @@
 #include "PantsVM.hpp"
 #include "PantsUI.hpp"
 #include <iostream>
+#include <iterator>
 
 using namespace pants::emu;
 int main() {
