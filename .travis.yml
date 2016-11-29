@@ -14,8 +14,8 @@ before_install:
     - sudo apt-get install -qq g++-5
 
 env:
-  - CONFIG=linux_debug
-  - CONFIG=linux_release
+  - CONFIG=debug_linux
+  - CONFIG=release_linux
 
 
 before_script:
@@ -24,6 +24,5 @@ before_script:
   - ./premake5-travis/premake5 gmake
 
 script:
-  - echo config is $CONFIG
   - make config=$CONFIG all
 
