@@ -19,7 +19,7 @@ namespace pants {
 		uint16_t low16(uint32_t i) {
 			return i & 0x00ff;
 		}
-		
+
 		uint8_t high8(uint16_t i) {
 			return i >> 8;
 		}
@@ -65,12 +65,12 @@ namespace pants {
 					regs.get(target) = regs.get(high16(operands)) * regs.get(low16(operands));
 				break;
 
-			case Opcode::div_: 
+			case Opcode::div_:
 				if (regs.sn())
 					regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) / int32_t(regs.get(low16(operands))));
 				else
 					regs.get(target) = regs.get(high16(operands)) / regs.get(low16(operands));
-				break; 
+				break;
 			case Opcode::set_: regs.get(target) = operands; break;
 			case Opcode::compare_:
 			{
@@ -92,9 +92,10 @@ namespace pants {
 			case Opcode::store_:
 			{
 				auto ptr = mem.data() + regs.me();
-				
-				std::copy(reinterpret_cast<unsigned char*>(&operands), 
-					reinterpret_cast<unsigned char*>(&operands) + sizeof(operands), ptr);
+                                auto val = regs.get(low16(operands));
+
+				std::copy(reinterpret_cast<unsigned char*>(&val),
+					reinterpret_cast<unsigned char*>(&val) + sizeof(val), ptr);
 				if (regs.me() < vga_width * vga_height) {
 					ui.redraw(mem);
 				}
@@ -104,7 +105,7 @@ namespace pants {
 			case Opcode::copy_: regs.get(high16(operands)) = regs.get(low16(operands)); break;
 			case Opcode::call_: regs.ra() = regs.pc() + 8; //FALLTHROUGH
 			case Opcode::jump_: regs.pc() = regs.me() + code_offset; return true;
-			 
+
 
 			case Opcode::halt_: return false;
 			default: std::cerr << "Bad opcode" << static_cast<uint16_t>(op); abort(); break;
