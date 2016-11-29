@@ -24,5 +24,6 @@ before_script:
   - ./premake5-travis/premake5 gmake
 
 script:
+  - echo config is $CONFIG
   - make config=$CONFIG all
 
