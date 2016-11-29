@@ -1,7 +1,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <stdexcept>
 
+#include "fmt/format.h"
 #include "PantsIsa.hpp"
 
 using namespace pants;
@@ -20,8 +22,7 @@ void emit (std::vector<char>& buf, uint16_t i) {
 
 Opcode getOpcode (const std::string& mnemonic) {
     if (!g_opcode_names.count(mnemonic)) {
-        std::cerr << "Bad opcode " << mnemonic;
-        abort();
+        throw std::runtime_error(fmt::format("Bad opcode: {}", mnemonic));
     }
 
     auto opcode = g_opcode_names[mnemonic];
@@ -34,8 +35,7 @@ Register emitReg (std::vector<char>& buf, std::istream& is) {
     is >> name;
 
     if (!g_register_names.count(name)) {
-        std::cerr << "Bad register " << name;
-        abort();
+        throw std::runtime_error(fmt::format("Bad register: {}", name));
     }
 
     auto reg = g_register_names[name];
@@ -109,9 +109,11 @@ void assemble (std::istream& is) {
             case Opcode::div_:
             case Opcode::and_:
             case Opcode::or_:
-            case Opcode::copy_:
             case Opcode::compare_:
                 emitReg(code, is); emitReg(code, is); emitReg(code, is); break;
+
+            case Opcode::copy_:
+                emitReg(code, is); emitReg(code, is); emit(code, uint16_t{0}); break;
 
             case Opcode::not_:
             case Opcode::load_:
