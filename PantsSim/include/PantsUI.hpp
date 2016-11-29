@@ -15,18 +15,25 @@ namespace pants {
 		class PantsUI {
 		public:
 			~PantsUI() {
-				TTF_CloseFont(m_font);
-
-				SDL_DestroyRenderer(m_renderer);
-				SDL_DestroyWindow(m_window);
-				SDL_DestroyTexture(m_texture);
+				if (m_font) {
+					TTF_CloseFont(m_font);
+				}
+				if (m_renderer) {
+					SDL_DestroyRenderer(m_renderer);
+				}
+				if (m_window) {
+					SDL_DestroyWindow(m_window);
+				}
+				if (m_texture) {
+					SDL_DestroyTexture(m_texture);
+				}
 
 				TTF_Quit();
 				IMG_Quit();
 				SDL_Quit();
 			}
 
-			PantsUI() : m_window(nullptr), m_surface(nullptr) {
+			PantsUI() : m_window(nullptr), m_surface(nullptr), m_texture(nullptr), m_font(nullptr), m_renderer(nullptr) {
 				SDL_Init(SDL_INIT_VIDEO);
 
 				m_window = SDL_CreateWindow("PantsEmu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
