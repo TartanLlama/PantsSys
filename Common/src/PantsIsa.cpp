@@ -1,25 +1,27 @@
+#pragma once
+
 #include <unordered_map>
 #include <string>
 #include "PantsIsa.hpp"
 
 namespace pants {
 	std::unordered_map<std::string, Opcode> g_opcode_names{
-		{"add", Opcode::addi},
-		{"sub", Opcode::subi},
-		{"mul", Opcode::muli},
-		{"div", Opcode::divi},
-		{"and", Opcode::andi},
-		{"or", Opcode::ori},
-		{"not", Opcode::noti},
-		{"copy", Opcode::copyi},
-		{"load", Opcode::loadi},
-		{"store", Opcode::storei},
-		{"setlow", Opcode::setlowi},
-		{"sethigh", Opcode::sethighi},
-		{"jump", Opcode::jumpi},
-		{"compare", Opcode::comparei},
-		{"branch", Opcode::branchi},
-		{"halt", Opcode::halti},
+		{"add", Opcode::add_},
+		{"sub", Opcode::sub_},
+		{"mul", Opcode::mul_},
+		{"div", Opcode::div_},
+		{"and", Opcode::and_},
+		{"or", Opcode::or_},
+		{"not", Opcode::not_},
+		{"copy", Opcode::copy_},
+		{"load", Opcode::load_},
+		{"store", Opcode::store_},
+		{"set", Opcode::set_},
+		{"jump", Opcode::jump_},
+		{"call", Opcode::call_},
+		{"compare", Opcode::compare_},
+		{"branch", Opcode::branch_},
+		{"halt", Opcode::halt_},
 	};
 
 	std::unordered_map<std::string, Register> g_register_names{
