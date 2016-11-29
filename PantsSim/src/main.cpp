@@ -1,9 +1,9 @@
-#include "PantsVM.hpp"
+#include "PantsSim.hpp"
 #include "PantsUI.hpp"
 #include <iostream>
 #include <iterator>
 
-using namespace pants::emu;
+using namespace pants::sim;
 int main() {
 	try {
 		PantsUI ui{};

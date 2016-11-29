@@ -4,29 +4,16 @@
 #include <iterator>
 
 #include "PantsIsa.hpp"
+#include "BitTwiddling.hpp"
 #include "PantsUI.hpp"
 #include "Config.hpp"
-#include "PantsVM.hpp"
+#include "PantsSim.hpp"
+
+using namespace pants::util;
 
 namespace pants {
-	namespace emu {
+	namespace sim {
 		void RegisterSet::dump(){ for (auto r : g_register_names) { std::cout << r.first << ' ' << get(r.second) << '\n'; } }
-
-		uint16_t high16(uint32_t i) {
-			return i >> 16;
-		}
-
-		uint16_t low16(uint32_t i) {
-			return i & 0x00ff;
-		}
-
-		uint8_t high8(uint16_t i) {
-			return i >> 8;
-		}
-
-		uint8_t low8(uint16_t i) {
-			return i & 0x0f;
-		}
 
 		Instruction fetch(const RegisterSet& regs, const Memory& mem) {
 			const char* pc = mem.data() + regs.pc();

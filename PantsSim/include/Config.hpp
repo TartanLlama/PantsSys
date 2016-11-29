@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace pants {
-	namespace emu {
+	namespace sim {
 		constexpr size_t mem_size = 1024 * 512;
 
 		constexpr size_t screen_width = 640;

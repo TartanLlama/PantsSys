@@ -1,9 +1,9 @@
 #include "catch.hpp"
-#include "PantsVM.hpp"
+#include "PantsSim.hpp"
 #include "PantsUI.hpp"
 
 using namespace pants;
-using namespace pants::emu;
+using namespace pants::sim;
 
 using Code = std::initializer_list<uint16_t>;
 
