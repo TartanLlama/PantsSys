@@ -22,5 +22,6 @@ before_script:
 script:
   - ls
   - pwd
+  - cat Makefile
   - make config=$CONFIG
 
