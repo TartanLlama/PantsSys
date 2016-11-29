@@ -23,5 +23,5 @@ script:
   - ls
   - pwd
   - cat Makefile
-  - make config=$CONFIG
+  - make PantsAsm
 
