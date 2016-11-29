@@ -9,14 +9,16 @@ before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
 
+env:
+  - CONFIG=linux_debug
+  - CONFIG=linux_release
+
+
 before_script:
   - git clone https://github.com/sbx320/premake5-travis.git
   - chmod +x premake5-travis/premake5
   - ./premake5-travis/premake5 gmake
 
 script:
-  - make config=${CONFIG}
+  - make config=$CONFIG
 
-env:
-  - CONFIG=linux_debug
-  - CONFIG=linux_release
