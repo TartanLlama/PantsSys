@@ -11,7 +11,23 @@ Parser::Parser(Lexer &lexer) : m_lexer{lexer} {}
 Token Parser::Lex() { return m_lexer.Lex(); }
 
 bool Parser::IsType(Token tok) {
-    //TODO implement
+    //TODO implement user-defined types
+
+    switch (tok) {
+    case Token::u8_:
+    case Token::u16_:
+    case Token::u32_:
+    case Token::i8_:
+    case Token::i16_:
+    case Token::i32_:
+    case Token::char_:
+    case Token::bool_:
+    case Token::nil_:
+        return true;
+    default:
+        return false;
+    }
+
     return true;
 }
 
@@ -61,10 +77,10 @@ ASTNodeUP Parser::ParseTopLevelDecl() {
     return {};
 }
 
-Id Parser::ParseType() {
+Type Parser::ParseType() {
     auto type = Lex();
 
-    if (type != Token::id_) {
+    if (!IsType(type) && type != Token::id_) {
         IssueDiagnostic(type, "Unexpected token {}",
                         type.ToString());
     }

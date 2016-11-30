@@ -59,6 +59,7 @@ class Token {
         i32_,
         bool_,
         char_,
+        nil_,
         eof_
     };
 
@@ -225,6 +226,8 @@ class Token {
             return "char";
         case bool_:
             return "bool";
+        case nil_:
+            return "nil";
         case eof_:
             return "eof";
         default:

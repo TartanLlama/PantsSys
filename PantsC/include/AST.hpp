@@ -22,6 +22,7 @@ class Return;
 class BinaryOp;
 class Call;
 class UnaryOp;
+class Type;
 
 class ASTVisitor {
   public:
@@ -42,6 +43,7 @@ class ASTVisitor {
     virtual void Visit(BinaryOp &) = 0;
     virtual void Visit(Call &) = 0;
     virtual void Visit(UnaryOp &) = 0;
+    virtual void Visit(Type &) = 0;
 };
 
 class ASTNode {
@@ -108,27 +110,35 @@ class Assign : public ASTNode {
     ASTNodeUP rhs;
 };
 
+class Type : public ASTNode {
+public:
+    void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    Type(Token tok) : ASTNode{tok} {}
+};
+
+
 class VarDecl : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    VarDecl(Token tok, Id type, Id id) : ASTNode{tok}, m_type{type}, m_id{id} {}
+    VarDecl(Token tok, Type type, Id id) : ASTNode{tok}, m_type{type}, m_id{id} {}
 
   private:
-    Id m_type;
+    Type m_type;
     Id m_id;
 };
 using VarDeclUP = std::unique_ptr<VarDecl>;
 
+
 class FuncDecl : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    FuncDecl(Token tok, Id name, Id type, std::vector<VarDeclUP> params,
+    FuncDecl(Token tok, Id name, Type type, std::vector<VarDeclUP> params,
              std::vector<ASTNodeUP> body)
         : ASTNode{tok}, m_name{name}, m_type{type}, m_params{std::move(params)},
           m_body{std::move(body)} {}
 
     Id Name() { return m_name; }
-    Id Type() { return m_type; }
+    Type& GetType() { return m_type; }
     auto ParamsBegin() { return begin(m_params); }
     auto ParamsEnd() { return end(m_params); }
     auto BodyBegin() { return begin(m_body); }
@@ -136,7 +146,7 @@ class FuncDecl : public ASTNode {
 
   private:
     Id m_name;
-    Id m_type;
+    Type m_type;
     std::vector<VarDeclUP> m_params;
     std::vector<ASTNodeUP> m_body;
 };
