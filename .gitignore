@@ -9,3 +9,5 @@ Makefile
 *.exe
 *.make
 .gdb_history
+compile_commands
+premake-export-compile-commands
