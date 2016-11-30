@@ -4,16 +4,17 @@
 #include "PantsFS.hpp"
 #include "fmt/format.h"
 
-using namespace pants;
+using namespace pants::fs;
+
 
 void WriteBootSector(std::ostream &file) {
-    for (std::size_t i = 0; i < g_pantsfs_block_size; ++i)
+    for (std::size_t i = 0; i < g_block_size; ++i)
         file << '\0';
 }
 
 void WriteSuperblock(std::ostream &file, std::string volume_label) {
     Superblock superblock{};
-    superblock.magic_number = g_pantsfs_magic_number;
+    superblock.magic_number = g_magic_number;
     superblock.version = 1;
     superblock.block_count = 3;
     superblock.free_block_count = 0;
