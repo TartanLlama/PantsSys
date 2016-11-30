@@ -13,7 +13,7 @@ void ASTPrinter::Visit(VarDecl &node) {
 void ASTPrinter::Visit(FuncDecl &node) {
     std::cout << "(FuncDecl";
     node.Name().Accept(*this);
-    node.Type().Accept(*this);
+    node.GetType().Accept(*this);
 
     for (auto it = node.ParamsBegin(), end = node.ParamsEnd(); it != end;
          ++it) {
@@ -71,6 +71,12 @@ void ASTPrinter::Visit(Call &node) {
 }
 void ASTPrinter::Visit(UnaryOp &node) {
     std::cout << "(UnaryOp";
+    std::cout << ")";
+}
+
+void ASTPrinter::Visit(Type &node) {
+    std::cout << "(Type ";
+    std::cout << node.Tok().ToString();
     std::cout << ")";
 }
 }

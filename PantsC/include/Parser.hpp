@@ -13,7 +13,9 @@
 namespace pants {
 class Parser {
   public:
-    struct ParseError{};
+    struct ParseError{
+        ParseError(){}
+    };
 
     Parser(Lexer &lexer);
     AST Parse();
@@ -42,7 +44,7 @@ class Parser {
     ASTNodeUP ParseExpression();
     ASTNodeUP ParseBinOpExpr();
     ASTNodeUP ParseOperand();
-    Id ParseType();
+    Type ParseType();
 
     ExprUP UnaryAction(Token tok);
     ExprUP LeftAction(Token tok, ExprUP left);

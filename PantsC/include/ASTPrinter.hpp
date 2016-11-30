@@ -19,5 +19,6 @@ class ASTPrinter : public ASTVisitor {
     void Visit(BinaryOp &) override;
     void Visit(Call &) override;
     void Visit(UnaryOp &) override;
+    void Visit(Type &) override;
 };
 }

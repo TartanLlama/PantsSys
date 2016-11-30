@@ -117,6 +117,24 @@ template <> inline Token Lexer::LexMultiToken<'c'>() {
     }
 }
 
+template <> inline Token Lexer::LexMultiToken<'n'>() {
+    (void)GetChar();
+    auto mc = PeekChar();
+    if (mc == EOF) {
+        return MakeToken(Token::id_, "n");
+    }
+
+    switch (mc) {
+    case 'o':
+        return LexStringToken(Token::not_, "not", "n");
+    case 'i':
+        return LexStringToken(Token::nil_, "nil", "n");
+
+    default:
+        return LexId("c");
+    }
+}
+
 template <> inline Token Lexer::LexMultiToken<'t'>() {
     (void)GetChar();
     auto mc = PeekChar();

@@ -239,7 +239,7 @@ Token Lexer::LexImpl() {
     case 'o':
         return LexStringToken(Token::or_, "or");
     case 'n':
-        return LexStringToken(Token::not_, "not");
+        return LexMultiToken<'n'>();
     case 'w':
         return LexStringToken(Token::while_, "while");
     case 'r':
