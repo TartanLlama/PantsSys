@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd compile_commands
+find ../Pants* ../Common -type f | grep '[htc]pp' | xargs clang-tidy -fix
