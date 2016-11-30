@@ -118,32 +118,108 @@ Maybe<ASTNodeUP> Parser::ParseBinOpExpr() {
                                      std::move(rhs.value()), op.value())};
 }
 
+    int Parser::GetLeftBindingPower(Token tok) {
+        static std::unordered_map<Token::Kind, int, utils::EnumHash> precedence_map {
+            {Token::add_, 10},
+            {Token::min_, 10},
+            {Token::mul_, 20},
+            {Token::div_, 20},
+            {Token::semi_, 0}
+        };
+
+        return precedence_map.at(tok.Type());
+    }
+
+Maybe<ExprUP> Parser::UnaryAction(Token tok) {
+    switch (tok.Type()) {
+    case Token::int_:
+        return {ParseStatus::Continue, ExprUP{std::make_unique<Int>(tok)}};
+    case Token::id_:
+        return {ParseStatus::Continue, ExprUP{std::make_unique<Id>(tok)}};
+    default:
+        throw UnimplementedException{};
+    }
+
+    return {ParseStatus::Continue, ExprUP{nullptr}};
+}
+
+Maybe<ExprUP> Parser::LeftAction(Token tok, ExprUP left) {
+    switch (tok.Type()) {
+    case Token::add_:
+    case Token::min_:
+    case Token::mul_:
+    case Token::div_: {
+        auto right_s = ParseSubExpression(GetLeftBindingPower(tok));
+        CHECK_RET(right_s);
+        return {ParseStatus::Continue, ExprUP{std::make_unique<BinaryOp>(left->Tok(),
+                                                                         std::move(left), std::move(right_s.value())
+                                                                         , tok)}};
+    }
+    default:
+        throw UnimplementedException{};
+    }
+
+    return {ParseStatus::Continue, ExprUP{nullptr}};
+}
+
+Maybe<ExprUP> Parser::ParseSubExpression(int right_binding_power) {
+  auto tok_s = Lex();
+  CHECK_RET(tok_s);
+  auto tok = tok_s.value();
+
+  auto left_s = UnaryAction(tok);
+  CHECK_RET(left_s);
+  auto left = std::move(left_s.value());
+
+  auto next_s = m_lexer.Peek();
+  CHECK_RET(next_s);
+  auto next = next_s.value();
+
+  while (right_binding_power < GetLeftBindingPower(next)) {
+      Lex();
+      tok = next;
+
+      auto new_left = LeftAction(tok, std::move(left));
+      CHECK_RET(new_left);
+      left = std::move(new_left.value());
+
+      auto new_next = m_lexer.Peek();
+      CHECK_RET(new_next);
+      next = new_next.value();
+  }
+
+  return {ParseStatus::Continue, std::move(left)};
+}
+
+Maybe<ASTNodeUP> Parser::ParseExpression() {
+    auto expr = ParseSubExpression();
+    CHECK_RET(expr);
+    CHECK_RET(ExpectToken(Token::semi_));
+    return {ParseStatus::Continue, ASTNodeUP{std::move(expr.value())}};
+}
+
 Maybe<ASTNodeUP> Parser::ParseStatement() {
-  auto tok = m_lexer.Peek();
-  CHECK_RET(tok);
+    auto tok = m_lexer.Peek();
+    CHECK_RET(tok);
 
-  switch (tok.value().Type()) {
-  case Token::for_:
-    return ParseFor();
-  case Token::while_:
-    return ParseWhile();
-  case Token::return_:
-    return ParseReturn();
-  default:
-    break;
-  }
+    switch (tok.value().Type()) {
+    case Token::for_:
+        return ParseFor();
+    case Token::while_:
+        return ParseWhile();
+    case Token::return_:
+        return ParseReturn();
+    default:
+        break;
+    }
 
-  if (tok.value() == Token::id_ && IsType(tok.value())) {
-    return ParseVarDecl();
-  }
+    if (tok.value() == Token::id_ && IsType(tok.value())) {
+        return ParseVarDecl();
+    }
 
-  tok = m_lexer.Lex();
-  CHECK_RET(tok);
 
-  auto expr = ParseBinOpExpr();
-
-  CHECK_RET(ExpectToken(Token::semi_));
-
+    auto expr = ParseExpression();
+    CHECK_RET(expr);
   return expr;
 }
 

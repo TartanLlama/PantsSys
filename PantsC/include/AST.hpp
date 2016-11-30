@@ -56,18 +56,59 @@ protected:
 
 using ASTNodeUP = std::unique_ptr<ASTNode>;
 
-class Id : public ASTNode {
+
+
+class Expr : public ASTNode {
 public:
   void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  Id(Token tok) : ASTNode{tok} {}
+  Expr(Token tok) : ASTNode{tok} {}
+};
+using ExprUP = std::unique_ptr<Expr>;
+
+class Id : public Expr {
+public:
+  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+  Id(Token tok) : Expr{tok} {}
   std::string String() { return m_tok.String().value(); }
 };
 
-class Int : public ASTNode {
+class Int : public Expr {
 public:
   void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  Int(Token tok) : ASTNode{tok} {}
+  Int(Token tok) : Expr{tok} {}
   int Val() { return m_tok.Int().value(); }
+};
+
+
+class BinaryOp : public Expr {
+public:
+  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+  BinaryOp(Token tok, ASTNodeUP lhs, ASTNodeUP rhs, Token op)
+      : Expr{tok}, m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, m_op{op} {}
+
+  ASTNode &Lhs() { return *m_lhs; }
+  ASTNode &Rhs() { return *m_rhs; }
+  Token Tok() { return m_op; }
+
+private:
+  ASTNodeUP m_lhs;
+  ASTNodeUP m_rhs;
+  Token m_op;
+};
+
+class UnaryOp : public Expr {
+public:
+  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+  ASTNodeUP m_lhs;
+  ASTNodeUP m_rhs;
+  Token m_op;
+};
+
+class Assign : public ASTNode {
+public:
+  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+  ASTNodeUP lhs;
+  ASTNodeUP rhs;
 };
 
 class VarDecl : public ASTNode {
@@ -132,44 +173,6 @@ public:
   void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
   ASTNodeUP m_cond;
   std::vector<ASTNodeUP> m_body;
-};
-
-class Expr : public ASTNode {
-public:
-  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  Expr(Token tok) : ASTNode{tok} {}
-};
-using ExprUP = std::unique_ptr<Expr>;
-
-class BinaryOp : public Expr {
-public:
-  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  BinaryOp(Token tok, ASTNodeUP lhs, ASTNodeUP rhs, Token op)
-      : Expr{tok}, m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, m_op{op} {}
-
-  ASTNode &Lhs() { return *m_lhs; }
-  ASTNode &Rhs() { return *m_rhs; }
-  Token Tok() { return m_op; }
-
-private:
-  ASTNodeUP m_lhs;
-  ASTNodeUP m_rhs;
-  Token m_op;
-};
-
-class UnaryOp : public Expr {
-public:
-  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  ASTNodeUP m_lhs;
-  ASTNodeUP m_rhs;
-  Token m_op;
-};
-
-class Assign : public ASTNode {
-public:
-  void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-  ASTNodeUP lhs;
-  ASTNodeUP rhs;
 };
 
 class If : public ASTNode {

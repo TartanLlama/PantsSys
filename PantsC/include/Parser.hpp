@@ -1,8 +1,11 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "AST.hpp"
 
 #include "Diagnostic.hpp"
+#include "EnumHash.hpp"
 #include "Lexer.hpp"
 #include "fmt/format.h"
 #include "status_value.hpp"
@@ -50,9 +53,16 @@ private:
   Maybe<ASTNodeUP> ParseWhile();
   Maybe<ASTNodeUP> ParseReturn();
   Maybe<ASTNodeUP> ParseStatement();
+  Maybe<ExprUP> ParseSubExpression(int right_binding_power=0);
+  Maybe<ASTNodeUP> ParseExpression();
   Maybe<ASTNodeUP> ParseBinOpExpr();
   Maybe<ASTNodeUP> ParseOperand();
   Maybe<Id> ParseType();
+
+  Maybe<ExprUP> UnaryAction(Token tok);
+  Maybe<ExprUP> LeftAction(Token tok, ExprUP left);
+
+  int GetLeftBindingPower(Token tok);
 
   bool IsType(Token tok);
   bool IsBinOp(Token tok);
