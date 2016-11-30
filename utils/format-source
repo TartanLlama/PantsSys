@@ -1,0 +1,3 @@
+#!/bin/bash
+
+find Pants* Common -type f | grep '[htc]pp' | xargs clang-format -i
