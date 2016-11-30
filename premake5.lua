@@ -42,7 +42,18 @@ newaction {
       os.rmdir("./build")
       os.rmdir("./obj")
       os.execute("rm *.make")
-      os.execute("Makefile")
+      os.execute("rm Makefile")
       print("done.")
    end
-}    
+}
+
+
+-- Documentation generation --
+newaction {
+    trigger     = "docs",
+    description = "generate the documentation",
+    execute     = function ()
+      print("generating documentation...")
+      os.execute("standardese PantsAsm/include")
+    end
+}
