@@ -7,65 +7,86 @@
 namespace pants {
 namespace fs {
 
-constexpr uint16_t g_magic_number = 0x9A27;
-constexpr uint16_t g_block_size = 512;
-constexpr uint16_t g_metafiles_per_block_group = 1024;
-constexpr uint16_t g_metafile_size = 32;
-constexpr uint16_t g_blocks_per_metafile = 29;
+constexpr uint16_t g_magic_number = 0x9A27; //< Magic number identifying a PantsFS file system
+constexpr uint16_t g_block_size = 512; //< Size of each file system block in bytes
+constexpr uint16_t g_metafiles_per_block_group = 1024; //< Number of metafiles per block group
+constexpr uint16_t g_metafile_size = 32; //< Size of each metafile in bytes
+constexpr uint16_t g_blocks_per_metafile = 29; //< Number of file system blocks per metafile
+
+/// Number of blocks in each block group
 constexpr uint16_t g_blocks_per_block_group =
     (g_metafile_size * g_metafiles_per_block_group) /
         g_block_size +
     g_blocks_per_metafile * g_metafiles_per_block_group;
+
+/// The block ID of the first block group
 constexpr uint16_t g_first_block_group_block_id = 2;
+
+/// Used to mark an invalid block ID
 constexpr uint16_t g_invalid_block_id = 0;
 
+
+/// The master block for the file system
+///
+/// This tracks global information about the file system
 struct Superblock {
-    uint16_t magic_number;
-    uint16_t version;
-    uint32_t block_count;
-    uint32_t free_block_count;
-    uint32_t metafile_count;
-    uint32_t free_metafile_count;
-    char name[64];
+    uint16_t magic_number; //< Should always store g_magic_number
+    uint16_t version; //< Version of PantsFS which is stored on that partition
+    uint32_t block_count; //< Number of blocks allocated
+    uint32_t free_block_count; //< Number of blocks which are currently free
+    uint32_t metafile_count; //< Number of metafiles allocated
+    uint32_t free_metafile_count; //< Number of metafiles which are currently free
+    char name[64]; //< Label for the file system
 };
 
+/// Type of a file
 enum class FileType : uint32_t {
     Directory,
     RegularFile,
 };
 
+
+/// Describes a file
 struct Metafile {
-    uint32_t type;
-    uint32_t size;
-    uint32_t block_count;
-    uint32_t blocks[29];
+    uint32_t type; //< Matches a [pants::fs::FileType]()
+    uint32_t size; //< Size of the file in bytes
+    uint32_t block_count; //< Number of blocks currently used by the file
+    uint32_t blocks[29]; //< IDs of the blocks storing the file contents
 };
 
+
+/// When a metafile is unused, it participates in a linked list of unused metafiles
 struct UnusedMetafile {
-    uint32_t prev;
-    uint32_t next;
-    uint32_t padding[30];
+    uint32_t prev; //< The block ID of the previous unused metafile
+    uint32_t next; //< The block ID of the next unused metafile
+    uint32_t padding[30]; //< Blank padding to match the size of [pants::fs::Metafile]()
 };
 
+
+/// Manages a group of blocks and metafiles
 struct BlockGroup {
-    Metafile metafile_table[g_metafiles_per_block_group];
-    uint16_t first_unused_metafile;
-    uint16_t unused_metafile_count;
-    uint16_t first_unused_block;
-    uint16_t unused_block_count;
+    Metafile metafile_table[g_metafiles_per_block_group]; //< The metafiles tracked by this block group
+    uint16_t first_unused_metafile; //< Index into [pants::fs::BlockGroup::metafile_table]() for the first unused metafile
+    uint16_t unused_metafile_count; //< Number of unused metafiles in [pants::fs::BlockGroup::metafile_table]()
+    uint16_t first_unused_block; //< Block ID of the first unused block for this block group
+    uint16_t unused_block_count; //< Number of unused blocks in this block group
 };
 
+
+/// A directory is just a metafile with a name attached
 struct Directory {
     uint32_t metafile;
     uint8_t name_size;
     char name[64];
 };
 
+
+/// A simple wrapper around a uint32_t for type safety
 struct Block {
     uint32_t id;
 };
 
-std::istream &operator>>(std::istream &is, Metafile &mf) {
+inline std::istream &operator>>(std::istream &is, Metafile &mf) {
     is >> mf.type >> mf.size >> mf.block_count;
     for (auto &&block : mf.blocks)
         is >> block;
