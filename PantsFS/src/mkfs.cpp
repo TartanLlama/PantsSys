@@ -12,11 +12,11 @@ void WriteBootSector(std::ostream &file) {
         file << '\0';
 }
 
-void WriteSuperblock(std::ostream &file, std::string volume_label) {
+Superblock WriteSuperblock(std::ostream &file, std::string volume_label) {
     Superblock superblock{};
     superblock.magic_number = g_magic_number;
     superblock.version = 1;
-    superblock.block_count = 3;
+    superblock.block_count = 3; //boot, super, root
     superblock.free_block_count = 0;
     superblock.metafile_count = 1;
     superblock.free_metafile_count = 0;
@@ -25,6 +25,8 @@ void WriteSuperblock(std::ostream &file, std::string volume_label) {
     auto block_bytes = reinterpret_cast<unsigned char *>(&superblock);
     std::copy(block_bytes, block_bytes + sizeof(Superblock),
               std::ostream_iterator<unsigned char>{file});
+
+    return superblock;
 }
 
 void WriteRootDir(std::ostream &file) {
@@ -41,13 +43,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    std::ofstream file{argv[1]};
+    std::fstream file{argv[1]};
     if (!file) {
         fmt::print(stderr, "Failed to open file {}", argv[1]);
         return -1;
     }
 
     WriteBootSector(file);
-    WriteSuperblock(file, argv[2]);
+    auto super = WriteSuperblock(file, argv[2]);
     WriteRootDir(file);
+    AllocateBlockGroup(file, super);
 }

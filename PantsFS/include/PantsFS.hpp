@@ -7,10 +7,32 @@
 namespace pants {
 namespace fs {
 
+/// Describes a file
+struct Metafile {
+    uint32_t type; //< Matches a [pants::fs::FileType]()
+    uint32_t size; //< Size of the file in bytes
+    uint32_t block_count; //< Number of blocks currently used by the file
+    uint32_t blocks[29]; //< IDs of the blocks storing the file contents
+};
+
+
+/// When a metafile is unused, it participates in a linked list of unused metafiles
+struct UnusedMetafile {
+    uint32_t prev; //< The block ID of the previous unused metafile
+    uint32_t next; //< The block ID of the next unused metafile
+    uint32_t padding[30]; //< Blank padding to match the size of [pants::fs::Metafile]()
+
+    UnusedMetafile (uint32_t prev)
+        : prev{prev}, next{prev+1} {}
+
+    UnusedMetafile (uint32_t prev, uint32_t next)
+        : prev{prev}, next{next} {}
+};
+
 constexpr uint16_t g_magic_number = 0x9A27; //< Magic number identifying a PantsFS file system
 constexpr uint16_t g_block_size = 512; //< Size of each file system block in bytes
 constexpr uint16_t g_metafiles_per_block_group = 1024; //< Number of metafiles per block group
-constexpr uint16_t g_metafile_size = 32; //< Size of each metafile in bytes
+constexpr uint16_t g_metafile_size = sizeof(Metafile); //< Size of each metafile in bytes
 constexpr uint16_t g_blocks_per_metafile = 29; //< Number of file system blocks per metafile
 
 /// Number of blocks in each block group
@@ -20,7 +42,7 @@ constexpr uint16_t g_blocks_per_block_group =
     g_blocks_per_metafile * g_metafiles_per_block_group;
 
 /// The block ID of the first block group
-constexpr uint16_t g_first_block_group_block_id = 2;
+constexpr uint16_t g_first_block_group_block_id = 3;
 
 /// Used to mark an invalid block ID
 constexpr uint16_t g_invalid_block_id = 0;
@@ -46,21 +68,6 @@ enum class FileType : uint32_t {
 };
 
 
-/// Describes a file
-struct Metafile {
-    uint32_t type; //< Matches a [pants::fs::FileType]()
-    uint32_t size; //< Size of the file in bytes
-    uint32_t block_count; //< Number of blocks currently used by the file
-    uint32_t blocks[29]; //< IDs of the blocks storing the file contents
-};
-
-
-/// When a metafile is unused, it participates in a linked list of unused metafiles
-struct UnusedMetafile {
-    uint32_t prev; //< The block ID of the previous unused metafile
-    uint32_t next; //< The block ID of the next unused metafile
-    uint32_t padding[30]; //< Blank padding to match the size of [pants::fs::Metafile]()
-};
 
 
 /// Manages a group of blocks and metafiles
@@ -86,33 +93,38 @@ struct Block {
     uint32_t id;
 };
 
+
+/// Read a metafile in from a stream
 inline std::istream &operator>>(std::istream &is, Metafile &mf) {
     is >> mf.type >> mf.size >> mf.block_count;
     for (auto &&block : mf.blocks)
         is >> block;
 }
 
-std::istream &operator>>(std::istream &is, BlockGroup &bg) {
-    for (auto &&mf : bg.metafile_table)
-        is >> mf;
-    is >> bg.first_unused_metafile >> bg.unused_metafile_count >>
-        bg.first_unused_block >> bg.unused_block_count;
-}
+/// Read a block group in from a stream
+std::istream &operator>>(std::istream &is, BlockGroup &bg);
 
+
+/// Get a byte offset into the file system from a block ID
 inline uint32_t ByteFromBlockID(uint32_t block_id) {
     return block_id * g_block_size;
 }
 
+
+/// Get the block group block ID from a metafile ID
 inline uint32_t BlockGroupIDFromMetafileID(uint32_t metafile_id) {
     return metafile_id / g_metafiles_per_block_group;
 }
 
+/// Get the block ID of a block group from a block group ID
 inline uint32_t BlockIDFromBlockGroupID(uint32_t block_group_id) {
     return block_group_id * g_blocks_per_block_group +
            g_first_block_group_block_id;
 }
 
-uint32_t ByteFromMetafileID(uint32_t metafile_id) {
+
+/// Get a byte offset into the file system from a metafile ID
+inline uint32_t ByteFromMetafileID(uint32_t metafile_id) {
     uint32_t block_group_id = BlockGroupIDFromMetafileID(metafile_id);
     uint32_t block_group_block_id = BlockIDFromBlockGroupID(block_group_id);
 }
@@ -136,8 +148,13 @@ inline void SetNextUnusedBlock(std::ostream &os, uint32_t block_id, uint32_t nex
 inline uint32_t CreateFile(std::iostream &fs_file, uint32_t dir_metafile_id,
                     const std::string &name) {}
 
-std::vector<Block> AllocateBlocks(std::iostream &file, const Superblock &super,
+
+/// Allocate blocks to cover the given size
+std::vector<Block> AllocateBlocks(std::iostream &file, Superblock &super,
                                  uint32_t metafile_id, std::size_t bytes);
+
+/// Allocate new block group at the end of the file system
+void AllocateBlockGroup(std::iostream &is, Superblock &super);
 
 }
 }

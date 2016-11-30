@@ -5,4 +5,4 @@ project "mkfs.pantsfs"
     targetdir "../build/bin/%{cfg.buildcfg}"
     includedirs {"include", "../ext/fmt"}
     links {"fmt"}
-    files {"src/mkfs.cpp"}
+    files {"src/mkfs.cpp", "src/PantsFS.cpp"}
