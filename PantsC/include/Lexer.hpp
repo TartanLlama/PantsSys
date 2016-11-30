@@ -7,56 +7,37 @@
 #include "status_value.hpp"
 
 namespace pants {
-class LexStatus {
-  public:
-    enum Status { End, Continue, Unrecognised };
-    LexStatus(Status s) : m_status{s} {}
-    LexStatus(const LexStatus &rhs) : m_status{Status{rhs}} {}
-    operator bool() const { return m_status != End; }
-    operator Status() const { return m_status; }
-    LexStatus &operator=(Status s) {
-        m_status = s;
-        return *this;
-    }
-
-  private:
-    Status m_status;
-};
-
 class Lexer {
   public:
-    template <typename T> using Maybe = status_value<LexStatus, T>;
-
     Lexer(std::istream &is) : m_is{is}, m_row{0}, m_col{0} {}
-    Maybe<Token> Lex();
-    Maybe<Token> Peek();
-    Maybe<Token> PeekMore();
+    Token Lex();
+    Token Peek();
+    Token PeekMore();
     const std::vector<Diagnostic> &diags() const { return m_diags; }
 
   private:
-    Maybe<Token> LexImpl();
+    Token LexImpl();
 
-    Maybe<char> GetChar();
-    Maybe<char> PeekChar();
+    char GetChar();
+    char PeekChar();
     void UngetChar() { m_is.unget(); }
 
-    Maybe<Token> LexId(std::string so_far = "");
-    Maybe<Token> LexHex();
-    Maybe<Token> LexInt();
-    Maybe<Token> LexCharToken(Token::Kind kind);
-    Maybe<Token> LexStringToken(Token::Kind kind, const std::string &str,
+    Token LexId(std::string so_far = "");
+    Token LexHex();
+    Token LexInt();
+    Token LexCharToken(Token::Kind kind);
+    Token LexStringToken(Token::Kind kind, const std::string &str,
                                 std::string so_far = "");
-    template <char C> Maybe<Token> LexMultiToken();
+    template <char C> Token LexMultiToken();
 
     void EatWhitespace();
 
     template <typename... Args>
-    Maybe<Token> MakeToken(Token::Kind kind, Args &&... args) {
-        return {LexStatus::Continue,
-                {kind, m_row, m_col, std::forward<Args>(args)...}};
+    Token MakeToken(Token::Kind kind, Args &&... args) {
+        return {kind, m_row, m_col, std::forward<Args>(args)...};
     }
 
-    Maybe<Token> CheckedMakeToken(Token::Kind kind, const std::string &str);
+    Token CheckedMakeToken(Token::Kind kind, const std::string &str);
 
     std::istream &m_is;
     std::size_t m_row, m_col;
@@ -67,7 +48,7 @@ class Lexer {
     }
 
     std::vector<Diagnostic> m_diags;
-    std::queue<Maybe<Token>> m_peeked;
+    std::queue<Token> m_peeked;
 };
 }
 

@@ -23,12 +23,17 @@ int main(int argc, const char *argv[]) {
 
     pants::Lexer lexer{file};
     pants::Parser parser{lexer};
-    auto ast = parser.Parse();
 
-    file.close();
-    file.open(file_name);
-    pants::PrintDiags(parser.diags(), file);
+    try {
+        auto ast = parser.Parse();
 
-    pants::ASTPrinter printer;
-    ast.Root().Accept(printer);
+        file.close();
+        file.open(file_name);
+
+        pants::ASTPrinter printer;
+        ast.Root().Accept(printer);
+    }
+    catch (pants::Parser::ParseError e) {
+        pants::PrintDiags(parser.diags(), file);
+    }
 }

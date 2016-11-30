@@ -3,17 +3,18 @@
 #include "AST.hpp"
 #include "Parser.hpp"
 
-#define CHECK_RET(tok)                                                         \
-    if (!tok.status())                                                         \
-        return { ParseStatus::End }
 #define UNIMPLEMENTED throw UnimplementedException{};
 
 namespace pants {
 Parser::Parser(Lexer &lexer) : m_lexer{lexer} {}
 
-Lexer::Maybe<Token> Parser::Lex() { return m_lexer.Lex(); }
+Token Parser::Lex() { return m_lexer.Lex(); }
 
-bool Parser::IsType(Token tok) { UNIMPLEMENTED }
+bool Parser::IsType(Token tok) {
+    //TODO implement
+    return true;
+}
+
 bool Parser::IsBinOp(Token tok) {
     switch (tok.Type()) {
     case Token::add_:
@@ -34,90 +35,76 @@ bool Parser::IsBinOp(Token tok) {
     }
 }
 
-Maybe<bool> Parser::ExpectToken(Token::Kind k) {
+void Parser::ExpectToken(Token::Kind k) {
     auto got = Lex();
-    if (!got.status())
-        return {ParseStatus::End};
 
-    if (got.value() != k) {
-        IssueDiagnostic(got.value(), "Expected '{}', got '{}'.", "kind",
-                        got.value().ToString());
-        return {ParseStatus::Continue, false};
+    if (got != k) {
+        IssueDiagnostic(got, "Expected '{}', got '{}'.", "kind",
+                        got.ToString());
     }
-
-    return {ParseStatus::Continue, true};
 }
 
-Maybe<ASTNodeUP> Parser::ParseTopLevelDecl() {
+ASTNodeUP Parser::ParseTopLevelDecl() {
     auto tok = m_lexer.Peek();
-    CHECK_RET(tok);
 
-    switch (tok.value().Type()) {
+    switch (tok.Type()) {
     case Token::func_:
         return ParseFunc();
     case Token::import_:
     case Token::class_:
     case Token::enum_:
     default:
-        IssueDiagnostic(tok.value(), "Unexpected token of type {}",
-                        tok.value().ToString());
+        IssueDiagnostic(tok, "Unexpected token of type {}",
+                        tok.ToString());
     }
 
-    return {ParseStatus::Continue, {}};
+    return {};
 }
 
-Maybe<Id> Parser::ParseType() {
+Id Parser::ParseType() {
     auto type = Lex();
-    CHECK_RET(type);
 
-    if (type.value() != Token::id_) {
-        IssueDiagnostic(type.value(), "Unexpected token {}",
-                        type.value().ToString());
+    if (type != Token::id_) {
+        IssueDiagnostic(type, "Unexpected token {}",
+                        type.ToString());
     }
 
-    return {ParseStatus::Continue, type.value()};
+    return type;
 }
 
-Maybe<ASTNodeUP> Parser::ParseVarDecl() { UNIMPLEMENTED }
-Maybe<ASTNodeUP> Parser::ParseFor() { UNIMPLEMENTED }
-Maybe<ASTNodeUP> Parser::ParseWhile() { UNIMPLEMENTED }
-Maybe<ASTNodeUP> Parser::ParseReturn() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseVarDecl() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseWhile() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseReturn() { UNIMPLEMENTED }
 
-Maybe<ASTNodeUP> Parser::ParseOperand() {
+ASTNodeUP Parser::ParseOperand() {
     auto operand = Lex();
-    CHECK_RET(operand);
 
-    if (operand.value() == Token::int_) {
-        return {ParseStatus::Continue, std::make_unique<Int>(operand.value())};
+    if (operand == Token::int_) {
+        return std::make_unique<Int>(operand);
     }
 
-    if (operand.value() == Token::id_) {
-        return {ParseStatus::Continue, std::make_unique<Id>(operand.value())};
+    if (operand == Token::id_) {
+        return std::make_unique<Id>(operand);
     }
 
-    IssueDiagnostic(operand.value(), "Unexpected token {}",
-                    operand.value().ToString());
+    IssueDiagnostic(operand, "Unexpected token {}",
+                    operand.ToString());
 }
 
-Maybe<ASTNodeUP> Parser::ParseBinOpExpr() {
+ASTNodeUP Parser::ParseBinOpExpr() {
     auto lhs = ParseOperand();
-    CHECK_RET(lhs);
 
     auto op = Lex();
-    CHECK_RET(op);
 
-    if (!IsBinOp(op.value())) {
-        IssueDiagnostic(op.value(), "Unexpected token {}",
-                        op.value().ToString());
+    if (!IsBinOp(op)) {
+        IssueDiagnostic(op, "Unexpected token {}",
+                        op.ToString());
     }
 
     auto rhs = ParseOperand();
-    CHECK_RET(rhs);
 
-    return {ParseStatus::Continue,
-            std::make_unique<BinaryOp>(lhs.value()->Tok(),
-                                       std::move(lhs.value()),
-                                       std::move(rhs.value()), op.value())};
+    return std::make_unique<BinaryOp>(lhs->Tok(), std::move(lhs), std::move(rhs), op);
 }
 
 int Parser::GetLeftBindingPower(Token tok) {
@@ -131,79 +118,71 @@ int Parser::GetLeftBindingPower(Token tok) {
     return precedence_map.at(tok.Type());
 }
 
-Maybe<ExprUP> Parser::UnaryAction(Token tok) {
+ExprUP Parser::UnaryAction(Token tok) {
     switch (tok.Type()) {
     case Token::int_:
-        return {ParseStatus::Continue, ExprUP{std::make_unique<Int>(tok)}};
+        return ExprUP{std::make_unique<Int>(tok)};
     case Token::id_:
-        return {ParseStatus::Continue, ExprUP{std::make_unique<Id>(tok)}};
+        return ExprUP{std::make_unique<Id>(tok)};
     default:
         throw UnimplementedException{};
     }
 
-    return {ParseStatus::Continue, ExprUP{nullptr}};
+    return nullptr;
 }
 
-Maybe<ExprUP> Parser::LeftAction(Token tok, ExprUP left) {
+ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     switch (tok.Type()) {
     case Token::add_:
     case Token::min_:
     case Token::mul_:
     case Token::div_: {
         auto right_s = ParseSubExpression(GetLeftBindingPower(tok));
-        CHECK_RET(right_s);
-        return {ParseStatus::Continue, ExprUP{std::make_unique<BinaryOp>(
+        return ExprUP{std::make_unique<BinaryOp>(
                                            left->Tok(), std::move(left),
-                                           std::move(right_s.value()), tok)}};
+                                           std::move(right_s), tok)};
     }
     default:
         throw UnimplementedException{};
     }
 
-    return {ParseStatus::Continue, ExprUP{nullptr}};
+    return nullptr;
 }
 
-Maybe<ExprUP> Parser::ParseSubExpression(int right_binding_power) {
+ExprUP Parser::ParseSubExpression(int right_binding_power) {
     auto tok_s = Lex();
-    CHECK_RET(tok_s);
-    auto tok = tok_s.value();
+    auto tok = tok_s;
 
     auto left_s = UnaryAction(tok);
-    CHECK_RET(left_s);
-    auto left = std::move(left_s.value());
+    auto left = std::move(left_s);
 
     auto next_s = m_lexer.Peek();
-    CHECK_RET(next_s);
-    auto next = next_s.value();
+    auto next = next_s;
 
     while (right_binding_power < GetLeftBindingPower(next)) {
         Lex();
         tok = next;
 
         auto new_left = LeftAction(tok, std::move(left));
-        CHECK_RET(new_left);
-        left = std::move(new_left.value());
+        left = std::move(new_left);
 
         auto new_next = m_lexer.Peek();
-        CHECK_RET(new_next);
-        next = new_next.value();
+        next = new_next;
     }
 
-    return {ParseStatus::Continue, std::move(left)};
+    return std::move(left);
 }
 
-Maybe<ASTNodeUP> Parser::ParseExpression() {
+ASTNodeUP Parser::ParseExpression() {
     auto expr = ParseSubExpression();
-    CHECK_RET(expr);
-    CHECK_RET(ExpectToken(Token::semi_));
-    return {ParseStatus::Continue, ASTNodeUP{std::move(expr.value())}};
+    ExpectToken(Token::semi_);
+    return ASTNodeUP{std::move(expr)};
 }
 
-Maybe<ASTNodeUP> Parser::ParseStatement() {
+ASTNodeUP Parser::ParseStatement() {
     auto tok = m_lexer.Peek();
-    CHECK_RET(tok);
 
-    switch (tok.value().Type()) {
+    switch (tok.Type()) {
     case Token::for_:
         return ParseFor();
     case Token::while_:
@@ -214,93 +193,81 @@ Maybe<ASTNodeUP> Parser::ParseStatement() {
         break;
     }
 
-    if (tok.value() == Token::id_ && IsType(tok.value())) {
+    if (tok == Token::id_ && IsType(tok)) {
         return ParseVarDecl();
     }
 
     auto expr = ParseExpression();
-    CHECK_RET(expr);
     return expr;
 }
 
-Maybe<ASTNodeUP> Parser::ParseFunc() {
+ASTNodeUP Parser::ParseFunc() {
     auto func_tok = Lex();
-    CHECK_RET(func_tok);
 
     auto id = Lex();
-    if (!id.status())
-        return {ParseStatus::End};
+    if (id == Token::eof_) return nullptr;
 
-    if (id.value() != Token::id_) {
-        IssueDiagnostic(id.value(), "Unexpected token {}",
-                        id.value().ToString());
+    if (id != Token::id_) {
+        IssueDiagnostic(id, "Unexpected token {}",
+                        id.ToString());
     }
 
-    if (!ExpectToken(Token::lsquare_).status())
-        return {ParseStatus::End};
+    ExpectToken(Token::lsquare_);
 
     std::vector<VarDeclUP> params{};
 
     while (true) {
         auto tok = m_lexer.Peek();
-        CHECK_RET(tok);
 
-        if (tok.value() == Token::rsquare_) {
+        if (tok == Token::rsquare_) {
             break;
         }
 
         auto type = ParseType();
-        CHECK_RET(type);
 
         auto id = Lex();
-        if (!id.status())
-            return {ParseStatus::End};
+        if (id == Token::eof_) return nullptr;
 
-        if (id.value() != Token::id_) {
-            IssueDiagnostic(id.value(), "Unexpected token {}",
-                            id.value().ToString());
+        if (id != Token::id_) {
+            IssueDiagnostic(id, "Unexpected token {}",
+                            id.ToString());
         }
 
         params.push_back(std::make_unique<VarDecl>(
-            type.value().Tok(), type.value(), Id{id.value()}));
+            type.Tok(), type, Id{id}));
 
-        if (tok.value() != Token::comma_) {
-            IssueDiagnostic(tok.value(), "Unexpected token {}",
-                            id.value().ToString());
+        if (tok != Token::comma_) {
+            IssueDiagnostic(tok, "Unexpected token {}",
+                            id.ToString());
         }
     }
 
-    CHECK_RET(ExpectToken(Token::rsquare_));
-    CHECK_RET(ExpectToken(Token::arrow_));
-
+    ExpectToken(Token::rsquare_);
+    ExpectToken(Token::arrow_);
     auto ret = ParseType();
-    CHECK_RET(ret);
-
-    CHECK_RET(ExpectToken(Token::is_));
+    ExpectToken(Token::is_);
 
     std::vector<ASTNodeUP> body{};
 
     while (true) {
         auto tok = m_lexer.Peek();
-        CHECK_RET(tok);
 
-        if (tok.value() == Token::end_)
+        if (tok == Token::end_)
             break;
 
         auto stmt = ParseStatement();
-        CHECK_RET(stmt);
-        body.push_back(std::move(stmt.value()));
+        body.push_back(std::move(stmt));
     }
 
-    auto func = std::make_unique<FuncDecl>(func_tok.value(), Id{id.value()},
-                                           ret.value(), std::move(params),
+    auto func = std::make_unique<FuncDecl>(func_tok, Id{id},
+                                           ret, std::move(params),
                                            std::move(body));
-    return {ParseStatus::Continue, std::unique_ptr<ASTNode>{std::move(func)}};
+    return std::unique_ptr<ASTNode>{std::move(func)};
 }
 
 AST Parser::Parse() {
     auto node = ParseTopLevelDecl();
 
-    return {std::move(node.value())};
+    return {std::move(node)};
 }
 }

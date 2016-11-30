@@ -1,6 +1,8 @@
 #include "Lexer.hpp"
 #include "Tokens.hpp"
 
+#include <stdexcept>
+
 namespace {
 bool ishex(char c) {
     c = tolower(c);
@@ -10,10 +12,10 @@ bool ishex(char c) {
 }
 
 namespace pants {
-Lexer::Maybe<char> Lexer::GetChar() {
+char Lexer::GetChar() {
     char c = m_is.get();
     if (!m_is)
-        return {LexStatus::End};
+        return EOF;
 
     if (c == '\n') {
         ++m_row;
@@ -22,64 +24,64 @@ Lexer::Maybe<char> Lexer::GetChar() {
         ++m_col;
     }
 
-    return {LexStatus::Continue, c};
+    return c;
 }
 
-Lexer::Maybe<char> Lexer::PeekChar() {
+char Lexer::PeekChar() {
     char c = m_is.peek();
     if (!m_is)
-        return {LexStatus::End};
+        return EOF;
 
-    return {LexStatus::Continue, c};
+    return c;
 }
 
 void Lexer::EatWhitespace() {
     while (true) {
         auto mc = PeekChar();
-        if (!mc.status())
+        if (mc == EOF)
             return;
 
-        if (!isspace(mc.value()))
+        if (!isspace(mc))
             return;
         (void)GetChar();
     }
 }
 
-Lexer::Maybe<Token> Lexer::LexCharToken(Token::Kind kind) {
+Token Lexer::LexCharToken(Token::Kind kind) {
     (void)GetChar();
     return MakeToken(kind);
 }
 
-Lexer::Maybe<Token> Lexer::LexId(std::string so_far) {
+Token Lexer::LexId(std::string so_far) {
     while (true) {
         auto mc = PeekChar();
-        if (!mc.status()) {
+        if (mc == EOF) {
             return MakeToken(Token::id_, so_far);
         }
 
-        if (!isalnum(mc.value())) {
+        if (!isalnum(mc)) {
             return MakeToken(Token::id_, so_far);
         }
 
         (void)GetChar();
-        so_far += mc.value();
+        so_far += mc;
     }
 }
 
-Lexer::Maybe<Token> Lexer::LexInt() {
+Token Lexer::LexInt() {
     auto mc = GetChar();
-    std::string str_i{mc.value()};
+    std::string str_i{mc};
 
     while (true) {
         auto mc = PeekChar();
-        if (!mc.status()) {
+        if (mc == EOF) {
             return MakeToken(Token::int_, std::stoi(str_i));
         }
 
-        if (isdigit(mc.value())) {
+        if (isdigit(mc)) {
             (void)GetChar();
-            str_i += mc.value();
-        } else if (isalpha(mc.value())) {
+            str_i += mc;
+        } else if (isalpha(mc)) {
             IssueDiagnostic("Malformed int");
             return MakeToken(Token::int_, std::stoi(str_i));
         } else {
@@ -90,37 +92,37 @@ Lexer::Maybe<Token> Lexer::LexInt() {
     return MakeToken(Token::int_, std::stoi(str_i));
 }
 
-Lexer::Maybe<Token> Lexer::LexHex() {
-    std::string str_i{GetChar().value()};
+Token Lexer::LexHex() {
+    std::string str_i{GetChar()};
 
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::int_, 0);
     }
 
-    if (isdigit(mc.value())) {
+    if (isdigit(mc)) {
         IssueDiagnostic("Ints cannot begin with a 0");
         return MakeToken(Token::int_, 0);
     }
 
-    if (mc.value() != 'x' && mc.value() != 'X') {
+    if (mc != 'x' && mc != 'X') {
         return MakeToken(Token::int_, 0);
     }
     (void)GetChar();
 
     while (true) {
         auto mc = PeekChar();
-        if (!mc.status()) {
+        if (mc == EOF) {
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
         }
 
-        if (ishex(mc.value())) {
+        if (ishex(mc)) {
             (void)GetChar();
-            str_i += mc.value();
-        } else if (isalpha(mc.value())) {
+            str_i += mc;
+        } else if (isalpha(mc)) {
             IssueDiagnostic("Malformed int");
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
-        } else if (isspace(mc.value())) {
+        } else if (isspace(mc)) {
             break;
         }
     }
@@ -128,35 +130,35 @@ Lexer::Maybe<Token> Lexer::LexHex() {
     return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
 }
 
-Lexer::Maybe<Token> Lexer::LexStringToken(Token::Kind kind,
+Token Lexer::LexStringToken(Token::Kind kind,
                                           const std::string &str,
                                           std::string so_far) {
     auto mc = GetChar();
-    so_far += mc.value();
+    so_far += mc;
 
     auto size = str.size();
     for (std::size_t i = so_far.size(); i < size; ++i) {
         auto mc = PeekChar();
-        if (!mc.status()) {
+        if (mc == EOF) {
             return LexId(so_far);
         }
 
-        if (mc.value() != str[i]) {
+        if (mc != str[i]) {
             return LexId(so_far);
         }
 
         (void)GetChar();
-        so_far += mc.value();
+        so_far += mc;
     }
     UngetChar();
     return CheckedMakeToken(kind, str);
 }
 
-Lexer::Maybe<Token> Lexer::PeekMore() {
+Token Lexer::PeekMore() {
     auto tok = LexImpl();
 
 #ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.value().ToString());
+    fmt::print("Lexed {}\n", token.ToString());
 #endif
 
     m_peeked.push(tok);
@@ -164,7 +166,7 @@ Lexer::Maybe<Token> Lexer::PeekMore() {
     return tok;
 }
 
-Lexer::Maybe<Token> Lexer::Peek() {
+Token Lexer::Peek() {
     if (!m_peeked.empty()) {
         return m_peeked.front();
     }
@@ -172,7 +174,7 @@ Lexer::Maybe<Token> Lexer::Peek() {
     auto tok = LexImpl();
 
 #ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.value().ToString());
+    fmt::print("Lexed {}\n", token.ToString());
 #endif
 
     m_peeked.push(tok);
@@ -180,7 +182,7 @@ Lexer::Maybe<Token> Lexer::Peek() {
     return tok;
 }
 
-Lexer::Maybe<Token> Lexer::Lex() {
+Token Lexer::Lex() {
     if (!m_peeked.empty()) {
         auto peeked = m_peeked.front();
         m_peeked.pop();
@@ -190,20 +192,20 @@ Lexer::Maybe<Token> Lexer::Lex() {
     auto tok = LexImpl();
 
 #ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.value().ToString());
+    fmt::print("Lexed {}\n", token.ToString());
 #endif
 
     return tok;
 }
 
-Lexer::Maybe<Token> Lexer::LexImpl() {
+Token Lexer::LexImpl() {
     EatWhitespace();
     auto mc = PeekChar();
-    if (mc.status() == LexStatus::End) {
-        return {LexStatus::End};
+    if (mc == EOF) {
+        return MakeToken(Token::eof_);
     }
 
-    auto c = mc.value();
+    auto c = mc;
     switch (c) {
     case '+':
         return LexCharToken(Token::add_);
@@ -281,14 +283,14 @@ Lexer::Maybe<Token> Lexer::LexImpl() {
         return LexInt();
     }
 
-    return {LexStatus::Unrecognised};
+    throw std::runtime_error("Unrecognised character");
 }
 
-Lexer::Maybe<Token> Lexer::CheckedMakeToken(Token::Kind kind,
+Token Lexer::CheckedMakeToken(Token::Kind kind,
                                             const std::string &str) {
     (void)GetChar();
     auto mc = PeekChar();
-    if (mc.status() && isalnum(mc.value())) {
+    if (mc != EOF && isalnum(mc)) {
         return LexId(str);
     }
     return MakeToken(kind);
