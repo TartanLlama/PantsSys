@@ -3,15 +3,15 @@
 #include "DependentFalse.hpp"
 
 namespace pants {
-template <char C> Lexer::Maybe<Token> Lexer::LexMultiToken() {
+template <char C> Token Lexer::LexMultiToken() {
     static_assert(DependentFalse<std::integral_constant<char, C>>::value,
                   "Not implemented");
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'-'>() {
+template <> inline Token Lexer::LexMultiToken<'-'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (mc.status() && mc.value() == '>') {
+    if (mc != EOF && mc == '>') {
         (void)GetChar();
         return MakeToken(Token::arrow_);
     }
@@ -19,14 +19,14 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'-'>() {
     return MakeToken(Token::min_);
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'i'>() {
+template <> inline Token Lexer::LexMultiToken<'i'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "i");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case 'n':
         return CheckedMakeToken(Token::in_, "in");
     case 's':
@@ -49,24 +49,24 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'i'>() {
     }
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'e'>() {
+template <> inline Token Lexer::LexMultiToken<'e'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "e");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case 'l':
         return LexStringToken(Token::else_, "else", "e");
     case 'n': {
         (void)GetChar();
         auto mc = PeekChar();
-        if (!mc.status()) {
+        if (mc == EOF) {
             return MakeToken(Token::id_, "en");
         }
 
-        switch (mc.value()) {
+        switch (mc) {
         case 'u':
             return LexStringToken(Token::enum_, "enum", "en");
         case 'd':
@@ -79,14 +79,14 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'e'>() {
     }
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'f'>() {
+template <> inline Token Lexer::LexMultiToken<'f'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "f");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case 'o':
         return LexStringToken(Token::for_, "for", "f");
     case 'a':
@@ -99,14 +99,14 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'f'>() {
     }
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'c'>() {
+template <> inline Token Lexer::LexMultiToken<'c'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "c");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case 'h':
         return LexStringToken(Token::char_, "char", "c");
     case 'l':
@@ -117,14 +117,14 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'c'>() {
     }
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'t'>() {
+template <> inline Token Lexer::LexMultiToken<'t'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "t");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case 'e':
         return LexStringToken(Token::template_, "template", "t");
     case 'r':
@@ -135,10 +135,10 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'t'>() {
     }
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'='>() {
+template <> inline Token Lexer::LexMultiToken<'='>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (mc.status() && mc.value() == '=') {
+    if (mc != EOF && mc == '=') {
         (void)GetChar();
         return MakeToken(Token::eq_);
     }
@@ -146,10 +146,10 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'='>() {
     return MakeToken(Token::assign_);
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'<'>() {
+template <> inline Token Lexer::LexMultiToken<'<'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (mc.status() && mc.value() == '=') {
+    if (mc != EOF && mc == '=') {
         (void)GetChar();
         return MakeToken(Token::le_);
     }
@@ -157,10 +157,10 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'<'>() {
     return MakeToken(Token::lt_);
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'>'>() {
+template <> inline Token Lexer::LexMultiToken<'>'>() {
     (void)GetChar();
     auto mc = PeekChar();
-    if (mc.status() && mc.value() == '=') {
+    if (mc != EOF && mc == '=') {
         (void)GetChar();
         return MakeToken(Token::ge_);
     }
@@ -168,15 +168,15 @@ template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'>'>() {
     return MakeToken(Token::gt_);
 }
 
-template <> inline Lexer::Maybe<Token> Lexer::LexMultiToken<'u'>() {
+template <> inline Token Lexer::LexMultiToken<'u'>() {
     (void)GetChar();
     auto mc = PeekChar();
 
-    if (!mc.status()) {
+    if (mc == EOF) {
         return MakeToken(Token::id_, "u");
     }
 
-    switch (mc.value()) {
+    switch (mc) {
     case '8':
         return CheckedMakeToken(Token::u8_, "u8");
     case '1':

@@ -58,7 +58,8 @@ class Token {
         i16_,
         i32_,
         bool_,
-        char_
+        char_,
+        eof_
     };
 
     Token(const Token &rhs)
@@ -224,6 +225,8 @@ class Token {
             return "char";
         case bool_:
             return "bool";
+        case eof_:
+            return "eof";
         default:
             assert(false);
         }
