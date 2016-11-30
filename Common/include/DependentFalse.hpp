@@ -2,5 +2,4 @@
 
 #include <type_traits>
 
-template <typename T>
-struct DependentFalse : std::false_type {};
+template <typename T> struct DependentFalse : std::false_type {};
