@@ -10,6 +10,7 @@ before_install:
     - git submodule update --init --recursive
     - export CXX="g++-5" CC="gcc-5" GCOV="gcov-5"
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots  # libsdl2
     - sudo apt-get update
     - sudo apt-get install -qq g++-5
     - sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
