@@ -128,14 +128,20 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::and_:
     case Token::or_:
         return 10;
+
+    case Token::ge_:
+    case Token::gt_:
+    case Token::lt_:
+    case Token::le_:
+        return 20;
         
     case Token::min_:
     case Token::add_:
-        return 20;
+        return 30;
         
     case Token::mul_:
     case Token::div_:
-        return 30;
+        return 40;
         
     case Token::semi_:
         return 0;
@@ -161,6 +167,10 @@ ExprUP Parser::UnaryAction(Token tok) {
 
 ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     switch (tok.Type()) {
+    case Token::ge_:
+    case Token::gt_:
+    case Token::lt_:
+    case Token::le_:        
     case Token::and_:
     case Token::or_:        
     case Token::add_:
