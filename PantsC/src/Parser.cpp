@@ -143,6 +143,7 @@ int Parser::GetLeftBindingPower(Token tok) {
         
     case Token::mul_:
     case Token::div_:
+    case Token::mod_:
         return 40;
         
     case Token::semi_:
@@ -178,6 +179,7 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     case Token::add_:
     case Token::min_:
     case Token::mul_:
+    case Token::mod_:
     case Token::div_: {
         auto right_s = ParseSubExpression(GetLeftBindingPower(tok));
         return ExprUP{std::make_unique<BinaryOp>(

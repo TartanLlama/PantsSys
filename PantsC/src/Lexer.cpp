@@ -215,7 +215,9 @@ Token Lexer::LexImpl() {
         return LexCharToken(Token::div_);
     case '*':
         return LexCharToken(Token::mul_);
-
+    case '%':
+        return LexCharToken(Token::mod_);
+        
     case ',':
         return LexCharToken(Token::comma_);
     case ':':

@@ -26,6 +26,7 @@ class Token {
         add_,
         min_,
         div_,
+        mod_,
         mul_,
         lt_,
         le_,
@@ -162,6 +163,8 @@ class Token {
             return "div";
         case mul_:
             return "mul";
+        case mod_:
+            return "mod";
         case lt_:
             return "lt";
         case le_:
