@@ -91,7 +91,7 @@ TEST_CASE("Execute", "[execute]") {
         }
 
         {
-            Instruction set{Opcode::set_, reg2int(Register::r2), -1};
+            Instruction set{Opcode::set_, reg2int(Register::r2), static_cast<uint32_t>(-1)};
             auto cont = execute(set, regs, mem, ui);
             REQUIRE(cont == true);
             REQUIRE(regs.r2() == static_cast<uint32_t>(-1));
@@ -146,7 +146,7 @@ TEST_CASE("Execute", "[execute]") {
         }
 
         {
-            Instruction set{Opcode::set_, reg2int(Register::r2), -1};
+            Instruction set{Opcode::set_, reg2int(Register::r2), static_cast<uint32_t>(-1)};
             auto cont = execute(set, regs, mem, ui);
             REQUIRE(cont == true);
             REQUIRE(regs.r2() == static_cast<uint32_t>(-1));
@@ -201,7 +201,7 @@ TEST_CASE("Execute", "[execute]") {
         }
 
         {
-            Instruction set{Opcode::set_, reg2int(Register::r2), -1};
+            Instruction set{Opcode::set_, reg2int(Register::r2), static_cast<uint32_t>(-1)};
             auto cont = execute(set, regs, mem, ui);
             REQUIRE(cont == true);
             REQUIRE(regs.r2() == static_cast<uint32_t>(-1));
@@ -256,7 +256,7 @@ TEST_CASE("Execute", "[execute]") {
         }
 
         {
-            Instruction set{Opcode::set_, reg2int(Register::r2), -1};
+            Instruction set{Opcode::set_, reg2int(Register::r2), static_cast<uint32_t>(-1)};
             auto cont = execute(set, regs, mem, ui);
             REQUIRE(cont == true);
             REQUIRE(regs.r2() == static_cast<uint32_t>(-1));
