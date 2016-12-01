@@ -125,8 +125,10 @@ ASTNodeUP Parser::ParseBinOpExpr() {
 
 int Parser::GetLeftBindingPower(Token tok) {
     switch (tok.Type()) {
-    case Token::and_:
     case Token::or_:
+        return 5;
+        
+    case Token::and_:
         return 10;
 
     case Token::ge_:
