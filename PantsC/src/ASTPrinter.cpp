@@ -6,6 +6,13 @@ void ASTPrinter::Visit(Id &node) {
     std::cout << "(Id " << node.String() << ')';
 }
 void ASTPrinter::Visit(Int &node) { std::cout << "(Int " << node.Val() << ')'; }
+
+void ASTPrinter::Visit(Bool &node) {
+    std::cout << "(Bool ";
+    std::cout << (node.Tok() == Token::true_ ? "true" : "false");
+    std::cout << ')';
+}
+    
 void ASTPrinter::Visit(VarDecl &node) {
     std::cout << "(VarDecl";
     std::cout << ")";
