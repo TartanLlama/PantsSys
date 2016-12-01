@@ -9,6 +9,7 @@
 namespace pants {
 class Id;
 class Int;
+class Bool;
 class VarDecl;
 class FuncDecl;
 class ClassDecl;
@@ -30,6 +31,7 @@ class ASTVisitor {
 
     virtual void Visit(Id &) = 0;
     virtual void Visit(Int &) = 0;
+    virtual void Visit(Bool &) = 0;
     virtual void Visit(VarDecl &) = 0;
     virtual void Visit(FuncDecl &) = 0;
     virtual void Visit(ClassDecl &) = 0;
@@ -79,6 +81,13 @@ class Int : public Expr {
     int Val() { return m_tok.Int().value(); }
 };
 
+class Bool : public Expr {
+  public:
+    void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    Bool(Token tok) : Expr{tok} {}
+};
+
+    
 class BinaryOp : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }

@@ -124,14 +124,22 @@ ASTNodeUP Parser::ParseBinOpExpr() {
 }
 
 int Parser::GetLeftBindingPower(Token tok) {
-    static std::unordered_map<Token::Kind, int, utils::EnumHash> precedence_map{
-        {Token::add_, 10},
-        {Token::min_, 10},
-        {Token::mul_, 20},
-        {Token::div_, 20},
-        {Token::semi_, 0}};
-
-    return precedence_map.at(tok.Type());
+    switch (tok.Type()) {
+    case Token::and_:
+    case Token::or_:
+        return 10;
+        
+    case Token::min_:
+    case Token::add_:
+        return 20;
+        
+    case Token::mul_:
+    case Token::div_:
+        return 30;
+        
+    case Token::semi_:
+        return 0;
+    }
 }
 
 ExprUP Parser::UnaryAction(Token tok) {
@@ -140,6 +148,10 @@ ExprUP Parser::UnaryAction(Token tok) {
         return ExprUP{std::make_unique<Int>(tok)};
     case Token::id_:
         return ExprUP{std::make_unique<Id>(tok)};
+    case Token::true_:
+    case Token::false_:
+        return ExprUP{std::make_unique<Bool>(tok)};
+        
     default:
         throw UnimplementedException{};
     }
@@ -149,6 +161,8 @@ ExprUP Parser::UnaryAction(Token tok) {
 
 ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     switch (tok.Type()) {
+    case Token::and_:
+    case Token::or_:        
     case Token::add_:
     case Token::min_:
     case Token::mul_:

@@ -6,6 +6,7 @@ namespace pants {
 class ASTPrinter : public ASTVisitor {
     void Visit(Id &) override;
     void Visit(Int &) override;
+    void Visit(Bool &) override;
     void Visit(VarDecl &) override;
     void Visit(FuncDecl &) override;
     void Visit(ClassDecl &) override;
