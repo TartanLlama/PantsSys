@@ -127,13 +127,24 @@ public:
 
 
 class VarDecl : public ASTNode {
-  public:
+public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    VarDecl(Token tok, Type type, Id id) : ASTNode{tok}, m_type{type}, m_id{id} {}
+    VarDecl(Token tok, Type type, Id id, ExprUP init)
+        : ASTNode{tok}, m_type{type}, m_id{id}, m_init{std::move(init)}
+    {}
+    VarDecl(Token tok, Type type, Id id)
+        : ASTNode{tok}, m_type{type}, m_id{id}, m_init{nullptr}
+    {}
 
-  private:
+    
+    Type GetType() { return m_type; }
+    Id GetId() { return m_id; }
+    ASTNode* GetInit() { return m_init.get(); }
+    
+    private:
     Type m_type;
     Id m_id;
+    ASTNodeUP m_init;
 };
 using VarDeclUP = std::unique_ptr<VarDecl>;
 

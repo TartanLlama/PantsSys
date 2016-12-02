@@ -42,9 +42,8 @@ class Parser {
     ASTNodeUP ParseStatement();
     ExprUP ParseSubExpression(int right_binding_power = 0);
     ASTNodeUP ParseExpression();
-    ASTNodeUP ParseBinOpExpr();
-    ASTNodeUP ParseOperand();
     Type ParseType();
+    Id ParseId();
     std::vector<ASTNodeUP> ParseScopeBody();
 
     ExprUP UnaryAction(Token tok);
