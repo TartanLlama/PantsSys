@@ -1,0 +1,13 @@
+os: Visual Studio 2015
+
+install:
+  - ps: Start-FileDownload 'https://github.com/premake/premake-core/releases/download/v5.0.0-alpha7/premake-5.0.0-alpha7-windows.zip' 'premake.zip'
+  
+  # Extract it in-place; premake5.exe is at the top level.
+  - 7z x premake.zip
+
+  - premake5.exe vs2015
+
+build:
+  project: PantsSys.sln
+    
