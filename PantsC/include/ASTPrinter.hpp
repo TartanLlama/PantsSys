@@ -4,6 +4,7 @@
 
 namespace pants {
 class ASTPrinter : public ASTVisitor {
+public:
     void Visit(Id &) override;
     void Visit(Int &) override;
     void Visit(Bool &) override;
@@ -21,5 +22,12 @@ class ASTPrinter : public ASTVisitor {
     void Visit(Call &) override;
     void Visit(UnaryOp &) override;
     void Visit(Type &) override;
+
+private:
+    void up() { --m_depth; }
+    void down();
+    void print(const std::string& str);
+    
+    std::size_t m_depth = 0;
 };
 }
