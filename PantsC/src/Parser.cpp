@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "AST.hpp"
 #include "Parser.hpp"
@@ -144,10 +145,11 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::mul_:
     case Token::div_:
     case Token::mod_:
+    case Token::lparen_:
         return 40;
         
     case Token::semi_:
-    case Token::lparen_:
+    case Token::comma_:
     case Token::rparen_:
         return 0;
     }
@@ -197,6 +199,30 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
                                            left->Tok(), std::move(left),
                                            std::move(right_s), tok)};
     }
+
+    case Token::lparen_:
+    {
+        std::vector<ExprUP> args;
+
+        auto tok = m_lexer.Peek();
+        if (tok != Token::rparen_) {
+            while (true) {
+                args.push_back(ParseSubExpression());
+
+                auto tok = m_lexer.Peek();
+                if (tok == Token::rparen_) {
+                    break;
+                }
+
+                ExpectToken(Token::comma_);
+            }
+        }
+
+        ExpectToken(Token::rparen_);
+        
+        return ExprUP{std::make_unique<Call>(left->Tok(), std::move(left), std::move(args))};
+    }
+        
     default:
         throw UnimplementedException{};
     }

@@ -73,6 +73,15 @@ void ASTPrinter::Visit(BinaryOp &node) {
 }
 void ASTPrinter::Visit(Call &node) {
     print("<<Call>>");
+    down();
+    node.Callee().Accept(*this);
+
+    for (auto it = node.ArgsBegin(), end = node.ArgsEnd(); it != end;
+         ++it) {
+        (*it)->Accept(*this);
+    }
+
+    up();
 }
 void ASTPrinter::Visit(UnaryOp &node) {
     print("<<UnaryOp>>");

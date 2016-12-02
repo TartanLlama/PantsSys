@@ -204,10 +204,16 @@ class If : public ASTNode {
 class Call : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    Call (Token tok, ExprUP callee, std::vector<ExprUP> args)
+        : Expr(tok), m_callee(std::move(callee)), m_args(std::move(args)) {}
+
+    Expr& Callee() { return *m_callee; }
+    auto ArgsBegin() { return m_args.begin(); }
+    auto ArgsEnd() { return m_args.end(); }
 
   private:
-    FuncDecl &m_func;
-    std::vector<ASTNodeUP> m_args;
+    ExprUP m_callee;
+    std::vector<ExprUP> m_args;
 };
 
 class Return : public ASTNode {
