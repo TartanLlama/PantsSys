@@ -8,6 +8,8 @@ install:
 
   - premake5.exe vs2015
 
+  - git submodule update --init --recursive
+
 build:
   project: PantsSys.sln
     
