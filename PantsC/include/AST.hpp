@@ -227,10 +227,14 @@ class Call : public Expr {
 class Return : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    Return (Token tok, ExprUP value)
+        : ASTNode{tok}, m_value{std::move(value)}
+    {}
 
+    Expr& Value() { return *m_value; }
+    
   private:
-    FuncDecl &m_func;
-    std::vector<ExprUP> m_args;
+    ExprUP m_value;
 };
 
 class AST {

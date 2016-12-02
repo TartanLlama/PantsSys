@@ -93,17 +93,22 @@ ASTNodeUP Parser::ParseVarDecl() { UNIMPLEMENTED }
 ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
     
 ASTNodeUP Parser::ParseWhile() {
-    auto func_tok = Lex();
+    auto while_tok = Lex();
     auto cond = ParseSubExpression();
 
     ExpectToken(Token::do_);
 
     auto body = ParseScopeBody();
 
-    return ASTNodeUP{std::make_unique<While>(func_tok, std::move(cond), std::move(body))};
+    return std::make_unique<While>(while_tok, std::move(cond), std::move(body));
 }
     
-ASTNodeUP Parser::ParseReturn() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseReturn() {
+    auto ret_tok = Lex();
+    auto cond = ParseSubExpression();
+    ExpectToken(Token::semi_);
+    return std::make_unique<Return>(ret_tok, std::move(cond));
+}
 
 ASTNodeUP Parser::ParseOperand() {
     auto operand = Lex();
@@ -268,7 +273,7 @@ ExprUP Parser::ParseSubExpression(int right_binding_power) {
 ASTNodeUP Parser::ParseExpression() {
     auto expr = ParseSubExpression();
     ExpectToken(Token::semi_);
-    return ASTNodeUP{std::move(expr)};
+    return std::move(expr);
 }
 
 ASTNodeUP Parser::ParseStatement() {
