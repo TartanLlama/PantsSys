@@ -16,7 +16,7 @@ project "PantsSimTest"
     flags {"C++14"}
     targetdir "../build/bin/%{cfg.buildcfg}"
     libdirs { os.getenv("SDL_LIB"), os.getenv("SDL_TTF_LIB"), os.getenv("SDL_IMAGE_LIB") }
-    includedirs { "../Common/include", "include", "../ext/catch"
+    includedirs { "../Common/include", "include", "../ext/catch",
                   os.getenv("SDL_INCLUDE"), os.getenv("SDL_TTF_INCLUDE"), os.getenv("SDL_IMAGE_INCLUDE") }
     links { "SDL2", "SDL2_image", "SDL2_ttf" }
     files { "test/**.cpp", "src/**.cpp", "include/**.hpp", "../Common/include/**.hpp", "../Common/src/**.cpp" }
