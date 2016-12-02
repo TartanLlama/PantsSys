@@ -1,0 +1,4 @@
+func entry [] -> nil is
+     u8 i;
+     u32 j = 3;
+end

@@ -20,6 +20,15 @@ void ASTPrinter::Visit(Bool &node) {
     
 void ASTPrinter::Visit(VarDecl &node) {
     print("<<VarDecl>>");
+
+    down();
+
+    node.GetType().Accept(*this);
+    node.GetId().Accept(*this);
+
+    if (node.GetInit()) node.GetInit()->Accept(*this);
+
+    up();
 }
 void ASTPrinter::Visit(FuncDecl &node) {
     print("<<FuncDecl>>");

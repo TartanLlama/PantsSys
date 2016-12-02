@@ -89,7 +89,25 @@ Type Parser::ParseType() {
     return type;
 }
 
-ASTNodeUP Parser::ParseVarDecl() { UNIMPLEMENTED }
+ASTNodeUP Parser::ParseVarDecl() {
+    auto type = ParseType();
+    auto id = ParseId();
+
+    auto init = ExprUP{nullptr};
+
+
+    //variable might have an initializer
+    auto tok = m_lexer.Peek();
+    if (tok == Token::assign_) {
+        Lex();
+        init = ParseSubExpression();
+    }
+
+    ExpectToken(Token::semi_);
+
+    return std::make_unique<VarDecl>(type.Tok(), type, id, std::move(init));
+}
+    
 ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
     
 ASTNodeUP Parser::ParseWhile() {
@@ -108,36 +126,6 @@ ASTNodeUP Parser::ParseReturn() {
     auto cond = ParseSubExpression();
     ExpectToken(Token::semi_);
     return std::make_unique<Return>(ret_tok, std::move(cond));
-}
-
-ASTNodeUP Parser::ParseOperand() {
-    auto operand = Lex();
-
-    if (operand == Token::int_) {
-        return std::make_unique<Int>(operand);
-    }
-
-    if (operand == Token::id_) {
-        return std::make_unique<Id>(operand);
-    }
-
-    IssueDiagnostic(operand, "Unexpected token {}",
-                    operand.ToString());
-}
-
-ASTNodeUP Parser::ParseBinOpExpr() {
-    auto lhs = ParseOperand();
-
-    auto op = Lex();
-
-    if (!IsBinOp(op)) {
-        IssueDiagnostic(op, "Unexpected token {}",
-                        op.ToString());
-    }
-
-    auto rhs = ParseOperand();
-
-    return std::make_unique<BinaryOp>(lhs->Tok(), std::move(lhs), std::move(rhs), op);
 }
 
 int Parser::GetLeftBindingPower(Token tok) {
@@ -290,7 +278,7 @@ ASTNodeUP Parser::ParseStatement() {
         break;
     }
 
-    if (tok == Token::id_ && IsType(tok)) {
+    if (IsType(tok)) {
         return ParseVarDecl();
     }
 
@@ -314,6 +302,17 @@ std::vector<ASTNodeUP> Parser::ParseScopeBody() {
     ExpectToken(Token::end_);
 
     return body;
+}
+
+Id Parser::ParseId() {
+    auto id = Lex();
+
+    if (id != Token::id_) {
+        IssueDiagnostic(id, "Unexpected token {}",
+                        id.ToString());
+    }
+
+    return id;
 }
     
 ASTNodeUP Parser::ParseFunc() {
