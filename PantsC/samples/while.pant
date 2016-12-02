@@ -1,0 +1,5 @@
+func entry [] -> nil is
+    while true do
+        1 + 1;
+    end
+end
