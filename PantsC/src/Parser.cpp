@@ -91,7 +91,18 @@ Type Parser::ParseType() {
 
 ASTNodeUP Parser::ParseVarDecl() { UNIMPLEMENTED }
 ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
-ASTNodeUP Parser::ParseWhile() { UNIMPLEMENTED }
+    
+ASTNodeUP Parser::ParseWhile() {
+    auto func_tok = Lex();
+    auto cond = ParseSubExpression();
+
+    ExpectToken(Token::do_);
+
+    auto body = ParseScopeBody();
+
+    return ASTNodeUP{std::make_unique<While>(func_tok, std::move(cond), std::move(body))};
+}
+    
 ASTNodeUP Parser::ParseReturn() { UNIMPLEMENTED }
 
 ASTNodeUP Parser::ParseOperand() {
@@ -282,6 +293,24 @@ ASTNodeUP Parser::ParseStatement() {
     return expr;
 }
 
+std::vector<ASTNodeUP> Parser::ParseScopeBody() {
+    std::vector<ASTNodeUP> body{};
+
+    while (true) {
+        auto tok = m_lexer.Peek();
+
+        if (tok == Token::end_)
+            break;
+
+        auto stmt = ParseStatement();
+        body.push_back(std::move(stmt));
+    }
+
+    ExpectToken(Token::end_);
+
+    return body;
+}
+    
 ASTNodeUP Parser::ParseFunc() {
     auto func_tok = Lex();
 
@@ -328,18 +357,7 @@ ASTNodeUP Parser::ParseFunc() {
     auto ret = ParseType();
     ExpectToken(Token::is_);
 
-    std::vector<ASTNodeUP> body{};
-
-    while (true) {
-        auto tok = m_lexer.Peek();
-
-        if (tok == Token::end_)
-            break;
-
-        auto stmt = ParseStatement();
-        body.push_back(std::move(stmt));
-    }
-
+    auto body = ParseScopeBody();
     auto func = std::make_unique<FuncDecl>(func_tok, Id{id},
                                            ret, std::move(params),
                                            std::move(body));

@@ -187,7 +187,15 @@ class For : public ASTNode {
 class While : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    ASTNodeUP m_cond;
+    While (Token tok, ExprUP cond, std::vector<ASTNodeUP> body)
+        : ASTNode(tok), m_cond(std::move(cond)), m_body(std::move(body)) {}
+
+    Expr& Cond() { return *m_cond; }
+    auto BodyBegin() { return m_body.begin(); }
+    auto BodyEnd() { return m_body.end(); }
+    
+private:
+    ExprUP m_cond;
     std::vector<ASTNodeUP> m_body;
 };
 

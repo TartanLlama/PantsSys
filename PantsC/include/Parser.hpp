@@ -45,6 +45,7 @@ class Parser {
     ASTNodeUP ParseBinOpExpr();
     ASTNodeUP ParseOperand();
     Type ParseType();
+    std::vector<ASTNodeUP> ParseScopeBody();
 
     ExprUP UnaryAction(Token tok);
     ExprUP LeftAction(Token tok, ExprUP left);
