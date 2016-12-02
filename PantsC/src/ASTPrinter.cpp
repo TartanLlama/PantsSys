@@ -1,24 +1,31 @@
 #include "ASTPrinter.hpp"
+#include "fmt/format.h"
 #include <iostream>
+
+using fmt::format;
 
 namespace pants {
 void ASTPrinter::Visit(Id &node) {
-    std::cout << "(Id " << node.String() << ')';
+    print(format("<<Id {}>>", node.String()));
 }
-void ASTPrinter::Visit(Int &node) { std::cout << "(Int " << node.Val() << ')'; }
+    
+void ASTPrinter::Visit(Int &node) {
+    print(format("<<Int {}>>", node.Val()));
+}
 
 void ASTPrinter::Visit(Bool &node) {
-    std::cout << "(Bool ";
-    std::cout << (node.Tok() == Token::true_ ? "true" : "false");
-    std::cout << ')';
+    auto text = (node.Tok() == Token::true_ ? "true" : "false");
+    print(format("<<Bool {}>>", text));
 }
     
 void ASTPrinter::Visit(VarDecl &node) {
-    std::cout << "(VarDecl";
-    std::cout << ")";
+    print("<<VarDecl>>");
 }
 void ASTPrinter::Visit(FuncDecl &node) {
-    std::cout << "(FuncDecl";
+    print("<<FuncDecl>>");
+
+    down();
+    
     node.Name().Accept(*this);
     node.GetType().Accept(*this);
 
@@ -30,60 +37,61 @@ void ASTPrinter::Visit(FuncDecl &node) {
     for (auto it = node.BodyBegin(), end = node.BodyEnd(); it != end; ++it) {
         (*it)->Accept(*this);
     }
-
-    std::cout << ")";
+    
+    up();
 }
 void ASTPrinter::Visit(ClassDecl &node) {
-    std::cout << "(ClassDecl";
-    std::cout << ")";
+    print("<<ClassDecl>>");
 }
 void ASTPrinter::Visit(EnumDecl &node) {
-    std::cout << "(EnumDecl";
-    std::cout << ")";
+    print("<<EnumDecl>>");
 }
 void ASTPrinter::Visit(For &node) {
-    std::cout << "(For";
-    std::cout << ")";
+    print("<<For>>");
 }
 void ASTPrinter::Visit(While &node) {
-    std::cout << "(While";
-    std::cout << ")";
+    print("<<While>>");
 }
 void ASTPrinter::Visit(Expr &node) {
-    std::cout << "(Expr";
-    std::cout << ")";
+    print("<<Expr>>");
 }
 void ASTPrinter::Visit(Assign &node) {
-    std::cout << "(Assign";
-    std::cout << ")";
+    print("<<Assign>>");
 }
 void ASTPrinter::Visit(If &node) {
-    std::cout << "(If";
-    std::cout << ")";
+    print("<<If>>");
 }
 void ASTPrinter::Visit(Return &node) {
-    std::cout << "(Return";
-    std::cout << ")";
+    print("<<Return>>");
 }
 void ASTPrinter::Visit(BinaryOp &node) {
-    std::cout << "(BinaryOp ";
-    std::cout << node.Tok().ToString() << ' ';
+    print(format("<<BinaryOp {}>>", node.Tok().ToString()));
+    down();
     node.Lhs().Accept(*this);
     node.Rhs().Accept(*this);
-    std::cout << ")";
+    up();
 }
 void ASTPrinter::Visit(Call &node) {
-    std::cout << "(Call";
-    std::cout << ")";
+    print("<<Call>>");
 }
 void ASTPrinter::Visit(UnaryOp &node) {
-    std::cout << "(UnaryOp";
-    std::cout << ")";
+    print("<<UnaryOp>>");
 }
 
 void ASTPrinter::Visit(Type &node) {
-    std::cout << "(Type ";
-    std::cout << node.Tok().ToString();
-    std::cout << ")";
+    print(format("<<Type {}>>", node.Tok().ToString()));
 }
+
+void ASTPrinter::down() {
+    ++m_depth;
+}
+
+void ASTPrinter::print(const std::string& str) {
+    for (std::size_t i = 0; i < m_depth; ++i) {
+        std::cout << "  ";
+    }
+
+    std::cout << str << '\n';
+}
+    
 }
