@@ -1,0 +1,7 @@
+func get[] -> u32 is
+    return 4;
+end
+
+func entry [] -> nil is
+     return get();
+end

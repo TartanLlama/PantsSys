@@ -63,6 +63,9 @@ void ASTPrinter::Visit(If &node) {
 }
 void ASTPrinter::Visit(Return &node) {
     print("<<Return>>");
+    down();
+    node.Value().Accept(*this);
+    up();
 }
 void ASTPrinter::Visit(BinaryOp &node) {
     print(format("<<BinaryOp {}>>", node.Tok().ToString()));
