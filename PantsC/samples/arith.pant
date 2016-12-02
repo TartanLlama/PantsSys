@@ -1,4 +1,5 @@
 func entry [] -> nil is
+    (1 + 42) * (3 + 8);  
     1 + 42 * 3 % 8;
     true or false and true;
     1 < 3 > 2 >= 3 <= 5;
