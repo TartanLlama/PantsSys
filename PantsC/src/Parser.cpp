@@ -147,6 +147,8 @@ int Parser::GetLeftBindingPower(Token tok) {
         return 40;
         
     case Token::semi_:
+    case Token::lparen_:
+    case Token::rparen_:
         return 0;
     }
 }
@@ -155,11 +157,20 @@ ExprUP Parser::UnaryAction(Token tok) {
     switch (tok.Type()) {
     case Token::int_:
         return ExprUP{std::make_unique<Int>(tok)};
+        
     case Token::id_:
         return ExprUP{std::make_unique<Id>(tok)};
+        
     case Token::true_:
     case Token::false_:
         return ExprUP{std::make_unique<Bool>(tok)};
+
+    case Token::lparen_:
+    {
+        auto expr = ParseSubExpression();
+        ExpectToken(Token::rparen_);
+        return expr;
+    }
         
     default:
         throw UnimplementedException{};
