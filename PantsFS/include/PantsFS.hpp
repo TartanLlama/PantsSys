@@ -99,6 +99,8 @@ inline std::istream &operator>>(std::istream &is, Metafile &mf) {
     is >> mf.type >> mf.size >> mf.block_count;
     for (auto &&block : mf.blocks)
         is >> block;
+
+    return is;
 }
 
 /// Read a block group in from a stream
