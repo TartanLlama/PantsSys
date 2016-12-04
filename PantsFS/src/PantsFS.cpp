@@ -105,6 +105,8 @@ std::istream &operator>>(std::istream &is, BlockGroup &bg) {
         is >> mf;
     is >> bg.first_unused_metafile >> bg.unused_metafile_count >>
         bg.first_unused_block >> bg.unused_block_count;
+
+    return is;
 }
 
 
