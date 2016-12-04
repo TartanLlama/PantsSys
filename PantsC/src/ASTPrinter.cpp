@@ -77,6 +77,26 @@ void ASTPrinter::Visit(Assign &node) {
 }
 void ASTPrinter::Visit(If &node) {
     print("<<If>>");
+
+    down();
+
+    for (auto it = node.CondsBegin(), end = node.CondsEnd(); it != end; ++it) {
+        it->first->Accept(*this);
+        down();
+
+        for (auto&& el : it->second) {
+            el->Accept(*this);
+        }
+
+        up();
+    }
+
+
+    for (auto it = node.ElseBegin(), end = node.ElseEnd(); it != end; ++it) {
+        (*it)->Accept(*this);
+    }
+
+    up();
 }
 void ASTPrinter::Visit(Return &node) {
     print("<<Return>>");

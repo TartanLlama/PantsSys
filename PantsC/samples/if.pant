@@ -1,0 +1,20 @@
+func entry [] -> u32 is
+     if true do
+     end
+
+     if true do
+     end
+     else do
+     end
+
+     if true do end
+     else if false do 1; end
+     else if false do end
+     else do
+     end
+
+     if true do end
+     else if false do end
+     else if false do
+     end
+end

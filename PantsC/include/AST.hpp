@@ -220,11 +220,20 @@ private:
 
 class If : public ASTNode {
   public:
+    using CondBodyPair = std::pair<ExprUP, std::vector<ASTNodeUP>>;
+
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    If (Token tok, std::vector<CondBodyPair> conds, std::vector<ASTNodeUP> else_body) :
+        ASTNode{tok}, m_conds{std::move(conds)}, m_else{std::move(else_body)}
+    {}
+
+    auto CondsBegin() { return m_conds.begin(); }
+    auto CondsEnd() { return m_conds.end(); }
+    auto ElseBegin() { return m_else.begin(); }
+    auto ElseEnd() { return m_else.end(); }
 
   private:
-    ASTNodeUP m_cond;
-    std::vector<ASTNodeUP> m_if;
+    std::vector<CondBodyPair> m_conds;
     std::vector<ASTNodeUP> m_else;
 };
 
