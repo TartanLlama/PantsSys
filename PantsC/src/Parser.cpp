@@ -11,7 +11,7 @@ Parser::Parser(Lexer &lexer) : m_lexer{lexer} {}
 
 Token Parser::Lex() { return m_lexer.Lex(); }
 
-bool Parser::IsType(Token tok) {
+bool Parser::CouldBeType(Token tok) {
     //TODO implement user-defined types
 
     switch (tok) {
@@ -23,6 +23,7 @@ bool Parser::IsType(Token tok) {
     case Token::i32_:
     case Token::char_:
     case Token::bool_:
+    case Token::id_:
     case Token::nil_:
         return true;
     default:
@@ -86,7 +87,7 @@ std::vector<ASTNodeUP> Parser::ParseTopLevelDecls() {
 Type Parser::ParseType() {
     auto type = Lex();
 
-    if (!IsType(type) && type != Token::id_) {
+    if (!CouldBeType(type)) {
         IssueDiagnostic(type, "Unexpected token {}",
                         type.ToString());
     }
@@ -181,29 +182,32 @@ ASTNodeUP Parser::ParseReturn() {
 
 int Parser::GetLeftBindingPower(Token tok) {
     switch (tok.Type()) {
-    case Token::or_:
+    case Token::assign_:
         return 5;
 
-    case Token::and_:
+    case Token::or_:
         return 10;
+
+    case Token::and_:
+        return 20;
 
     case Token::ge_:
     case Token::gt_:
     case Token::lt_:
     case Token::le_:
-        return 20;
+        return 30;
 
     case Token::min_:
     case Token::add_:
-        return 30;
+        return 40;
 
     case Token::mul_:
     case Token::div_:
     case Token::mod_:
-        return 40;
+        return 50;
 
     case Token::lparen_:
-        return 50;
+        return 60;
 
     case Token::semi_:
     case Token::comma_:
@@ -240,6 +244,7 @@ ExprUP Parser::UnaryAction(Token tok) {
 
 ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     switch (tok.Type()) {
+    case Token::assign_:
     case Token::ge_:
     case Token::gt_:
     case Token::lt_:
@@ -333,7 +338,7 @@ ASTNodeUP Parser::ParseStatement() {
         break;
     }
 
-    if (tok == Token::id_ && m_lexer.PeekMore() == Token::id_) {
+    if (CouldBeType(tok) && m_lexer.PeekMore() == Token::id_) {
         return ParseVarDecl();
     }
 

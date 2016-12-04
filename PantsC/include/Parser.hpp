@@ -53,7 +53,7 @@ class Parser {
 
     int GetLeftBindingPower(Token tok);
 
-    bool IsType(Token tok);
+    bool CouldBeType(Token tok);
     bool IsBinOp(Token tok);
 
     Token Lex();
