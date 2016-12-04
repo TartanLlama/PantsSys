@@ -8,7 +8,7 @@ namespace pants {
 void ASTPrinter::Visit(Id &node) {
     print(format("<<Id {}>>", node.String()));
 }
-    
+
 void ASTPrinter::Visit(Int &node) {
     print(format("<<Int {}>>", node.Val()));
 }
@@ -17,7 +17,7 @@ void ASTPrinter::Visit(Bool &node) {
     auto text = (node.Tok() == Token::true_ ? "true" : "false");
     print(format("<<Bool {}>>", text));
 }
-    
+
 void ASTPrinter::Visit(VarDecl &node) {
     print("<<VarDecl>>");
 
@@ -34,7 +34,7 @@ void ASTPrinter::Visit(FuncDecl &node) {
     print("<<FuncDecl>>");
 
     down();
-    
+
     node.Name().Accept(*this);
     node.GetType().Accept(*this);
 
@@ -46,11 +46,19 @@ void ASTPrinter::Visit(FuncDecl &node) {
     for (auto it = node.BodyBegin(), end = node.BodyEnd(); it != end; ++it) {
         (*it)->Accept(*this);
     }
-    
+
     up();
 }
 void ASTPrinter::Visit(ClassDecl &node) {
-    print("<<ClassDecl>>");
+    print(format("<<ClassDecl {}>>", node.Name().String()));
+
+    down();
+
+    for (auto it = node.VarsBegin(), end = node.VarsEnd(); it != end; ++it) {
+        (*it)->Accept(*this);
+    }
+
+    up();
 }
 void ASTPrinter::Visit(EnumDecl &node) {
     print("<<EnumDecl>>");
@@ -114,5 +122,5 @@ void ASTPrinter::print(const std::string& str) {
 
     std::cout << str << '\n';
 }
-    
+
 }

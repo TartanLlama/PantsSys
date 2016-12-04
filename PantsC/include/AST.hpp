@@ -174,6 +174,14 @@ class FuncDecl : public ASTNode {
 class ClassDecl : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    ClassDecl(Token tok, Id name, std::vector<VarDeclUP> vars)
+        : ASTNode{tok}, m_name{name}, m_vars{std::move(vars)}
+    {}
+
+    Id Name() { return m_name; }
+    auto VarsBegin() { return m_vars.begin(); }
+    auto VarsEnd() { return m_vars.end(); }
+
 
   private:
     Id m_name;
