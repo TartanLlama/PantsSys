@@ -17,7 +17,7 @@ install:
   # SDL2_ttf
   - ps: |
       $SDL_TTF_VERSION = "2.0.14"
-      $SDL_TTF_PREFIX = "C:\sdl_root\SDL2-$SDL_TTF_VERSION"
+      $SDL_TTF_PREFIX = "C:\sdl_root\SDL2_ttf-$SDL_TTF_VERSION"
       if (!(Test-Path -Path $SDL_TTF_PREFIX)) {
         Start-FileDownload https://libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-$SDL_TTF_VERSION-VC.zip
         7z x SDL2_ttf-devel-$SDL_TTF_VERSION-VC.zip -oC:\sdl_root\
@@ -28,7 +28,7 @@ install:
   # SDL2_image
   - ps: |
       $SDL_IMAGE_VERSION = "2.0.1"
-      $SDL_IMAGE_PREFIX = "C:\sdl_root\SDL2-$SDL_IMAGE_VERSION"
+      $SDL_IMAGE_PREFIX = "C:\sdl_root\SDL2_image-$SDL_IMAGE_VERSION"
       if (!(Test-Path -Path $SDL_IMAGE_PREFIX)) {
         Start-FileDownload https://libsdl.org/projects/SDL_image/release/SDL2_image-devel-$SDL_IMAGE_VERSION-VC.zip
         7z x SDL2_image-devel-$SDL_IMAGE_VERSION-VC.zip -oC:\sdl_root\
