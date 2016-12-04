@@ -18,11 +18,6 @@ filter "configurations:Debug"
       defines { "NDEBUG" }
       optimize "On"
 
-include "PantsAsm"
-include "PantsC"
-include "PantsFS"
-include "PantsSim"
-
 -- External dependencies
 project "fmt"
     kind "StaticLib"
@@ -32,6 +27,11 @@ project "fmt"
     includedirs {"ext/fmt"}
     files {"ext/fmt/fmt/**.h", "ext/fmt/fmt/**.cc"}
 
+
+include "PantsAsm"
+include "PantsC"
+include "PantsFS"
+include "PantsSim"
 
 -- Clean Function --
 newaction {
