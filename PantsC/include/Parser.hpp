@@ -35,8 +35,9 @@ class Parser {
   private:
     std::vector<ASTNodeUP> ParseTopLevelDecls();
     ASTNodeUP ParseFunc();
-    ASTNodeUP ParseVarDecl();
+    VarDeclUP ParseVarDecl();
     ASTNodeUP ParseFor();
+    ASTNodeUP ParseClass();
     ASTNodeUP ParseWhile();
     ASTNodeUP ParseReturn();
     ASTNodeUP ParseStatement();

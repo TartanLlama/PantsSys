@@ -71,6 +71,8 @@ std::vector<ASTNodeUP> Parser::ParseTopLevelDecls() {
             break;
         case Token::import_:
         case Token::class_:
+            nodes.push_back(ParseClass());
+            break;
         case Token::enum_:
         default:
             IssueDiagnostic(tok, "Unexpected token of type {}",
@@ -92,7 +94,22 @@ Type Parser::ParseType() {
     return type;
 }
 
-ASTNodeUP Parser::ParseVarDecl() {
+ASTNodeUP Parser::ParseClass() {
+    auto class_tok = Lex();
+    auto id = ParseId();
+    ExpectToken(Token::is_);
+
+    std::vector<VarDeclUP> members{};
+    for (auto tok = m_lexer.Peek(); tok != Token::end_; tok = m_lexer.Peek()) {
+        members.push_back(ParseVarDecl());
+    }
+
+    ExpectToken(Token::end_);
+
+    return std::make_unique<ClassDecl>(class_tok, id, std::move(members));
+}
+
+VarDeclUP Parser::ParseVarDecl() {
     auto type = ParseType();
     auto id = ParseId();
 

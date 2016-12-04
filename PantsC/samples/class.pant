@@ -1,0 +1,3 @@
+class vec2 is
+      u32 x; u32 y;
+end
