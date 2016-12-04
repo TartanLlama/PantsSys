@@ -130,6 +130,37 @@ VarDeclUP Parser::ParseVarDecl() {
 
 ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
 
+ASTNodeUP Parser::ParseIf() {
+    auto if_tok = Lex();
+
+    auto cond = ParseSubExpression();
+    ExpectToken(Token::do_);
+    auto if_body = ParseScopeBody();
+
+    std::vector<If::CondBodyPair> conds{};
+    conds.emplace_back(std::move(cond),std::move(if_body));
+
+    //parse else if statements
+    while (m_lexer.Peek() == Token::else_ && m_lexer.PeekMore() == Token::if_) {
+        (void)Lex(); (void)Lex();
+        auto else_if_cond = ParseSubExpression();
+        ExpectToken(Token::do_);
+        auto else_if_body = ParseScopeBody();
+
+        conds.emplace_back(std::move(else_if_cond), std::move(else_if_body));
+    }
+
+    //parse else
+    std::vector<ASTNodeUP> else_body;
+    if (m_lexer.Peek() == Token::else_) {
+        (void)Lex();
+        ExpectToken(Token::do_);
+        else_body = ParseScopeBody();
+    }
+
+    return std::make_unique<If>(if_tok, std::move(conds), std::move(else_body));
+}
+
 ASTNodeUP Parser::ParseWhile() {
     auto while_tok = Lex();
     auto cond = ParseSubExpression();
@@ -294,6 +325,8 @@ ASTNodeUP Parser::ParseStatement() {
         return ParseWhile();
     case Token::return_:
         return ParseReturn();
+    case Token::if_:
+        return ParseIf();
     default:
         break;
     }
