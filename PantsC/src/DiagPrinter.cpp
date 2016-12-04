@@ -7,6 +7,8 @@
 
 namespace pants {
 void PrintDiags(std::vector<Diagnostic> diags, std::istream &file) {
+    file.seekg(0);
+
     std::sort(diags.begin(), diags.end(), [](auto &&a, auto &&b) {
         return std::make_tuple(a.row(), a.col()) <
                std::make_tuple(b.row(), b.col());
@@ -20,7 +22,7 @@ void PrintDiags(std::vector<Diagnostic> diags, std::istream &file) {
         auto diag_line = diag->row();
 
         std::string text{};
-        if (diag_line != 0 && line == diag_line - 1) {
+        if (diag_line != 0 && line == diag_line) {
             text = last_text;
         } else {
             while (line < diag_line) {
