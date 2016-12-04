@@ -298,7 +298,7 @@ ASTNodeUP Parser::ParseStatement() {
         break;
     }
 
-    if (IsType(tok)) {
+    if (tok == Token::id_ && m_lexer.PeekMore() == Token::id_) {
         return ParseVarDecl();
     }
 
