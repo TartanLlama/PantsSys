@@ -87,7 +87,7 @@ class Bool : public Expr {
     Bool(Token tok) : Expr{tok} {}
 };
 
-    
+
 class BinaryOp : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
@@ -136,11 +136,11 @@ public:
         : ASTNode{tok}, m_type{type}, m_id{id}, m_init{nullptr}
     {}
 
-    
+
     Type GetType() { return m_type; }
     Id GetId() { return m_id; }
     ASTNode* GetInit() { return m_init.get(); }
-    
+
     private:
     Type m_type;
     Id m_id;
@@ -204,7 +204,7 @@ class While : public ASTNode {
     Expr& Cond() { return *m_cond; }
     auto BodyBegin() { return m_body.begin(); }
     auto BodyEnd() { return m_body.end(); }
-    
+
 private:
     ExprUP m_cond;
     std::vector<ASTNodeUP> m_body;
@@ -243,17 +243,18 @@ class Return : public ASTNode {
     {}
 
     Expr& Value() { return *m_value; }
-    
+
   private:
     ExprUP m_value;
 };
 
 class AST {
   public:
-    AST(ASTNodeUP node) : m_node{std::move(node)} {}
-    ASTNode &Root() { return *m_node; }
+    AST(std::vector<ASTNodeUP> nodes) : m_nodes{std::move(nodes)} {}
+    auto NodesBegin() { return m_nodes.begin(); }
+    auto NodesEnd() { return m_nodes.end(); }
 
   private:
-    ASTNodeUP m_node;
+    std::vector<ASTNodeUP> m_nodes;
 };
 }

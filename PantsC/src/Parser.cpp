@@ -61,21 +61,24 @@ void Parser::ExpectToken(Token::Kind k) {
     }
 }
 
-ASTNodeUP Parser::ParseTopLevelDecl() {
-    auto tok = m_lexer.Peek();
+std::vector<ASTNodeUP> Parser::ParseTopLevelDecls() {
+    std::vector<ASTNodeUP> nodes;
 
-    switch (tok.Type()) {
-    case Token::func_:
-        return ParseFunc();
-    case Token::import_:
-    case Token::class_:
-    case Token::enum_:
-    default:
-        IssueDiagnostic(tok, "Unexpected token of type {}",
-                        tok.ToString());
+    for (auto tok = m_lexer.Peek(); tok != Token::eof_; tok = m_lexer.Peek()) {
+        switch (tok.Type()) {
+        case Token::func_:
+            nodes.push_back(ParseFunc());
+            break;
+        case Token::import_:
+        case Token::class_:
+        case Token::enum_:
+        default:
+            IssueDiagnostic(tok, "Unexpected token of type {}",
+                            tok.ToString());
+        }
     }
 
-    return {};
+    return nodes;
 }
 
 Type Parser::ParseType() {
@@ -107,9 +110,9 @@ ASTNodeUP Parser::ParseVarDecl() {
 
     return std::make_unique<VarDecl>(type.Tok(), type, id, std::move(init));
 }
-    
+
 ASTNodeUP Parser::ParseFor() { UNIMPLEMENTED }
-    
+
 ASTNodeUP Parser::ParseWhile() {
     auto while_tok = Lex();
     auto cond = ParseSubExpression();
@@ -120,7 +123,7 @@ ASTNodeUP Parser::ParseWhile() {
 
     return std::make_unique<While>(while_tok, std::move(cond), std::move(body));
 }
-    
+
 ASTNodeUP Parser::ParseReturn() {
     auto ret_tok = Lex();
     auto cond = ParseSubExpression();
@@ -132,7 +135,7 @@ int Parser::GetLeftBindingPower(Token tok) {
     switch (tok.Type()) {
     case Token::or_:
         return 5;
-        
+
     case Token::and_:
         return 10;
 
@@ -141,17 +144,17 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::lt_:
     case Token::le_:
         return 20;
-        
+
     case Token::min_:
     case Token::add_:
         return 30;
-        
+
     case Token::mul_:
     case Token::div_:
     case Token::mod_:
     case Token::lparen_:
         return 40;
-        
+
     case Token::semi_:
     case Token::comma_:
     case Token::rparen_:
@@ -163,10 +166,10 @@ ExprUP Parser::UnaryAction(Token tok) {
     switch (tok.Type()) {
     case Token::int_:
         return ExprUP{std::make_unique<Int>(tok)};
-        
+
     case Token::id_:
         return ExprUP{std::make_unique<Id>(tok)};
-        
+
     case Token::true_:
     case Token::false_:
         return ExprUP{std::make_unique<Bool>(tok)};
@@ -177,7 +180,7 @@ ExprUP Parser::UnaryAction(Token tok) {
         ExpectToken(Token::rparen_);
         return expr;
     }
-        
+
     default:
         throw UnimplementedException{};
     }
@@ -190,9 +193,9 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     case Token::ge_:
     case Token::gt_:
     case Token::lt_:
-    case Token::le_:        
+    case Token::le_:
     case Token::and_:
-    case Token::or_:        
+    case Token::or_:
     case Token::add_:
     case Token::min_:
     case Token::mul_:
@@ -223,10 +226,10 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
         }
 
         ExpectToken(Token::rparen_);
-        
+
         return ExprUP{std::make_unique<Call>(left->Tok(), std::move(left), std::move(args))};
     }
-        
+
     default:
         throw UnimplementedException{};
     }
@@ -314,7 +317,7 @@ Id Parser::ParseId() {
 
     return id;
 }
-    
+
 ASTNodeUP Parser::ParseFunc() {
     auto func_tok = Lex();
 
@@ -369,8 +372,8 @@ ASTNodeUP Parser::ParseFunc() {
 }
 
 AST Parser::Parse() {
-    auto node = ParseTopLevelDecl();
+    auto nodes = ParseTopLevelDecls();
 
-    return {std::move(node)};
+    return {std::move(nodes)};
 }
 }

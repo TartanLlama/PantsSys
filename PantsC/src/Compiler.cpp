@@ -31,7 +31,9 @@ int main(int argc, const char *argv[]) {
         file.open(file_name);
 
         pants::ASTPrinter printer;
-        ast.Root().Accept(printer);
+        for (auto node = ast.NodesBegin(), end = ast.NodesEnd(); node != end; ++node) {
+            (*node)->Accept(printer);
+        }
     }
     catch (pants::Parser::ParseError e) {
         pants::PrintDiags(parser.diags(), file);
