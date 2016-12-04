@@ -61,8 +61,17 @@ void ASTPrinter::Visit(ClassDecl &node) {
     up();
 }
 void ASTPrinter::Visit(EnumDecl &node) {
-    print("<<EnumDecl>>");
+    print(format("<<EnumDecl {}>>", node.Name().String()));
+
+    down();
+
+    for (auto it = node.EnumsBegin(), end = node.EnumsEnd(); it != end; ++it) {
+        it->Accept(*this);
+    }
+
+    up();
 }
+
 void ASTPrinter::Visit(For &node) {
     print("<<For>>");
 }
