@@ -32,7 +32,7 @@ void AllocateBlockGroup(std::iostream &is, Superblock &super) {
     BlockGroup group;
     auto first_metafile_block_id = super.block_count;
 
-    size_t i = 0;
+    uint32_t i = 0;
     for (i = first_metafile_block_id;
          i <= g_metafiles_per_block_group + first_metafile_block_id;
          ++i) {
