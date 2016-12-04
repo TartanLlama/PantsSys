@@ -2,6 +2,8 @@ workspace "PantsSys"
     configurations { "Debug", "Release" }
     platforms { "Win64", "Linux" }
 
+    flags {"ExtraWarnings"}
+
 filter "platforms:Win64"
     system "Windows"
     architecture "x64"
@@ -14,7 +16,7 @@ filter "configurations:Debug"
       defines { "DEBUG" }
       flags { "Symbols" }
 
-   filter "configurations:Release"
+filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
 

@@ -60,11 +60,22 @@ void test_set(Memory &mem, RegisterSet &regs, PantsUI &ui, uint32_t val) {
 TEST_CASE("Execute", "[execute]") {
     Memory mem{};
     RegisterSet regs{};
-    PantsUI ui{};
+    PantsUI ui{true};
 
     SECTION("Add unsigned") {
-        test_set(mem, regs, ui, 3);
-        test_set(mem, regs, ui, 2);
+        {
+            Instruction set{Opcode::set_, reg2int(Register::r1), 3};
+            auto cont = execute(set, regs, mem, ui);
+            REQUIRE(cont == true);
+            REQUIRE(regs.r1() == 3);
+        }
+
+        {
+            Instruction set{Opcode::set_, reg2int(Register::r2), 2};
+            auto cont = execute(set, regs, mem, ui);
+            REQUIRE(cont == true);
+            REQUIRE(regs.r2() == 2);
+        }
 
         {
             Instruction add{Opcode::add_, reg2int(Register::r0),
