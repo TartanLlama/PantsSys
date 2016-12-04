@@ -41,9 +41,11 @@ class PantsUI {
         SDL_Quit();
     }
 
-    PantsUI()
+    PantsUI(bool dummy = false)
         : m_window(nullptr), m_surface(nullptr), m_texture(nullptr),
           m_font(nullptr), m_renderer(nullptr) {
+        if (dummy) return;
+
         SDL_Init(SDL_INIT_VIDEO);
 
         m_window = SDL_CreateWindow("PantsSim", SDL_WINDOWPOS_UNDEFINED,
