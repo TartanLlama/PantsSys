@@ -11,7 +11,7 @@ install:
         Start-FileDownload https://libsdl.org/release/SDL2-devel-$SDL_VERSION-VC.zip
         7z x SDL2-devel-$SDL_VERSION-VC.zip -oC:\sdl_root\
       }
-      $env:SDL2_INCLUDE = "$SDL_PREFIX\include"
+      $SDL2_INCLUDE = "$SDL_PREFIX\include"
       $env:SDL2_LIB = "$SDL_PREFIX\lib"
 
   # SDL2_ttf
@@ -47,4 +47,3 @@ install:
 
 build:
   project: PantsSys.sln
-    
