@@ -200,8 +200,10 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::mul_:
     case Token::div_:
     case Token::mod_:
-    case Token::lparen_:
         return 40;
+
+    case Token::lparen_:
+        return 50;
 
     case Token::semi_:
     case Token::comma_:
