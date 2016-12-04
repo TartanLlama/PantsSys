@@ -189,8 +189,18 @@ class ClassDecl : public ASTNode {
 };
 
 class EnumDecl : public ASTNode {
-  public:
+public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    EnumDecl (Token tok, Id name, std::vector<Id> enums) :
+        ASTNode{tok}, m_name{name}, m_enums{std::move(enums)}
+    {}
+
+    Id Name() { return m_name; }
+    auto EnumsBegin() { return m_enums.begin(); }
+    auto EnumsEnd() { return m_enums.end(); }
+
+
+private:
     Id m_name;
     std::vector<Id> m_enums;
 };

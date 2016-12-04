@@ -75,6 +75,8 @@ std::vector<ASTNodeUP> Parser::ParseTopLevelDecls() {
             nodes.push_back(ParseClass());
             break;
         case Token::enum_:
+            nodes.push_back(ParseEnum());
+            break;
         default:
             IssueDiagnostic(tok, "Unexpected token of type {}",
                             tok.ToString());
@@ -109,6 +111,31 @@ ASTNodeUP Parser::ParseClass() {
 
     return std::make_unique<ClassDecl>(class_tok, id, std::move(members));
 }
+
+ASTNodeUP Parser::ParseEnum() {
+    auto enum_tok = Lex();
+    auto id = ParseId();
+    ExpectToken(Token::is_);
+
+    std::vector<Id> names{};
+    for (auto tok = m_lexer.Peek(); ; tok = m_lexer.Peek()) {
+        names.push_back(ParseId());
+
+        if (m_lexer.Peek() == Token::end_) break;
+
+        //allow trailing comma
+        if (m_lexer.Peek() == Token::comma_ && m_lexer.PeekMore() == Token::end_) {
+            (void)Lex(); break;
+        }
+
+        ExpectToken(Token::comma_);
+    }
+
+    ExpectToken(Token::end_);
+
+    return std::make_unique<EnumDecl>(enum_tok, id, std::move(names));
+}
+
 
 VarDeclUP Parser::ParseVarDecl() {
     auto type = ParseType();

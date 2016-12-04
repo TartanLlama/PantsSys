@@ -1,0 +1,7 @@
+enum Color is
+    Red, Green, Blue
+end
+
+enum Cheese is
+     Stilton, Cheddar,
+end

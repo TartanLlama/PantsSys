@@ -40,6 +40,7 @@ class Parser {
     ASTNodeUP ParseClass();
     ASTNodeUP ParseWhile();
     ASTNodeUP ParseIf();
+    ASTNodeUP ParseEnum();
     ASTNodeUP ParseReturn();
     ASTNodeUP ParseStatement();
     ExprUP ParseSubExpression(int right_binding_power = 0);
