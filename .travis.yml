@@ -16,8 +16,8 @@ before_install:
     - sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
 
 env:
-  - CONFIG=debug_linux
-  - CONFIG=release_linux
+  - CONFIG=debug_linux BUILD_DIR=Debug
+  - CONFIG=release_linux BUILD_DIR=Release
 
 
 before_script:
@@ -27,4 +27,5 @@ before_script:
 
 script:
   - make config=$CONFIG all
-
+  - cd build/bin/$BUILD_DIR
+  - ./PantsSimTest
