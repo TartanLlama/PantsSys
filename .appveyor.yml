@@ -3,6 +3,8 @@ os: Visual Studio 2015
 install:
   - ps: Start-FileDownload 'https://github.com/premake/premake-core/releases/download/v5.0.0-alpha7/premake-5.0.0-alpha7-windows.zip' 'premake.zip'
 
+  - $ARCH = x64
+
   # SDL2
   - ps: |
       $SDL_VERSION = "2.0.4"
@@ -12,7 +14,7 @@ install:
         7z x SDL2-devel-$SDL_VERSION-VC.zip -oC:\sdl_root\
       }
       $env:SDL_INCLUDE = "$SDL_PREFIX\include"
-      $env:SDL_LIB = "$SDL_PREFIX\lib"
+      $env:SDL_LIB = "$SDL_PREFIX\lib\$ARCH"
 
   # SDL2_ttf
   - ps: |
@@ -23,7 +25,7 @@ install:
         7z x SDL2_ttf-devel-$SDL_TTF_VERSION-VC.zip -oC:\sdl_root\
       }
       $env:SDL_TTF_INCLUDE = "$SDL_TTF_PREFIX\include"
-      $env:SDL_TTF_LIB = "$SDL_TTF_PREFIX\lib"
+      $env:SDL_TTF_LIB = "$SDL_TTF_PREFIX\lib\$ARCH"
 
   # SDL2_image
   - ps: |
@@ -34,7 +36,7 @@ install:
         7z x SDL2_image-devel-$SDL_IMAGE_VERSION-VC.zip -oC:\sdl_root\
       }
       $env:SDL_IMAGE_INCLUDE = "$SDL_IMAGE_PREFIX\include"
-      $env:SDL_IMAGE_LIB = "$SDL_IMAGE_PREFIX\lib"
+      $env:SDL_IMAGE_LIB = "$SDL_IMAGE_PREFIX\lib\$ARCH"
 
 
 
