@@ -56,7 +56,7 @@ void Parser::ExpectToken(Token::Kind k) {
     auto got = Lex();
 
     if (got != k) {
-        IssueDiagnostic(got, "Expected '{}', got '{}'.", "kind",
+        IssueDiagnostic(got, "Expected '{}', got '{}'.", Token{k,0,0}.ToString(),
                         got.ToString());
     }
 }
