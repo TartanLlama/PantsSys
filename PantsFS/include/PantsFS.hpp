@@ -129,6 +129,11 @@ inline uint32_t BlockIDFromBlockGroupID(uint32_t block_group_id) {
 inline uint32_t ByteFromMetafileID(uint32_t metafile_id) {
     uint32_t block_group_id = BlockGroupIDFromMetafileID(metafile_id);
     uint32_t block_group_block_id = BlockIDFromBlockGroupID(block_group_id);
+
+    //TODO implement
+    (void)block_group_id;
+    (void)block_group_block_id;
+    return 0;
 }
 
 uint32_t NextUnusedBlock(std::istream &is, uint32_t block_id,
@@ -148,7 +153,13 @@ inline void SetNextUnusedBlock(std::ostream &os, uint32_t block_id, uint32_t nex
 }
 
 inline uint32_t CreateFile(std::iostream &fs_file, uint32_t dir_metafile_id,
-                    const std::string &name) {}
+                    const std::string &name) {
+//TODO implement
+    (void)fs_file;
+    (void)dir_metafile_id;
+    (void)name;
+    return 0;
+}
 
 
 /// Allocate blocks to cover the given size

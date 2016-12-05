@@ -97,6 +97,9 @@ std::vector<Block> AllocateBlocks(std::iostream &file, Superblock &super,
 
     group.first_unused_block = last;
 
+    //TODO update superblock
+    (void)super;
+    
     return blocks;
 }
 
