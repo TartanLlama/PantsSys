@@ -14,7 +14,7 @@ filter "platforms:Linux"
 
 filter "configurations:Debug"
       defines { "DEBUG" }
-      flags { "Symbols" }
+      symbols "On"
 
 filter "configurations:Release"
       defines { "NDEBUG" }
