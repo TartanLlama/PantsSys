@@ -30,7 +30,10 @@ class Lexer {
                                 std::string so_far = "");
     template <char C> Token LexMultiToken();
 
-    void EatWhitespace();
+    void EatWhitespaceAndComments();
+    void EatComment();
+    void EatSingleLineComment();
+    void EatMultiLineComment();
 
     template <typename... Args>
     Token MakeToken(Token::Kind kind, Args &&... args) {
