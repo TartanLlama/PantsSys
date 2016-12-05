@@ -35,15 +35,71 @@ char Lexer::PeekChar() {
     return c;
 }
 
-void Lexer::EatWhitespace() {
+void Lexer::EatMultiLineComment() {
+    //assume that we've already read #{
+    
+    while (true) {
+        auto mc = PeekChar();
+
+        if (mc == EOF) return;
+
+        if (mc == '}') {
+            (void)GetChar();
+            if (PeekChar() == '#') {
+                (void)GetChar();
+                return;
+            }
+        }
+
+        (void)GetChar();
+    }
+}
+
+void Lexer::EatSingleLineComment() {
+    //assume that we've already read #
+    
+    while (true) {
+        auto mc = PeekChar();
+
+        if (mc == EOF)
+            return;
+
+        if (mc == '\n') {
+            (void)GetChar();
+            return;
+        }
+
+        (void)GetChar();
+    }
+}
+    
+void Lexer::EatComment() {
+    if (PeekChar() == '#') (void)GetChar();
+
+    if (PeekChar() == '{') {
+        (void)GetChar();
+        EatMultiLineComment();
+    } 
+    else {
+        EatSingleLineComment();
+    }
+}
+
+    
+void Lexer::EatWhitespaceAndComments() {
     while (true) {
         auto mc = PeekChar();
         if (mc == EOF)
             return;
 
-        if (!isspace(mc))
+        if (mc == '#') {
+            EatComment();
+        }
+        else if (!isspace(mc)) {
             return;
-        (void)GetChar();
+        } else {
+            (void)GetChar();
+        }
     }
 }
 
@@ -199,7 +255,8 @@ Token Lexer::Lex() {
 }
 
 Token Lexer::LexImpl() {
-    EatWhitespace();
+    EatWhitespaceAndComments();
+    
     auto mc = PeekChar();
     if (mc == EOF) {
         return MakeToken(Token::eof_);
