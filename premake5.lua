@@ -2,7 +2,7 @@ workspace "PantsSys"
     configurations { "Debug", "Release" }
     platforms { "Win64", "Linux" }
 
-    flags {"ExtraWarnings"}
+    flags {"ExtraWarnings", "FatalWarnings"}
 
 filter "platforms:Win64"
     system "Windows"
