@@ -42,8 +42,8 @@ class PantsUI {
     }
 
     PantsUI(bool dummy = false)
-        : m_window(nullptr), m_surface(nullptr), m_texture(nullptr),
-          m_font(nullptr), m_renderer(nullptr) {
+        : m_window(nullptr), m_surface(nullptr),
+          m_font(nullptr), m_renderer(nullptr), m_texture(nullptr) {
         if (dummy) return;
 
         SDL_Init(SDL_INIT_VIDEO);

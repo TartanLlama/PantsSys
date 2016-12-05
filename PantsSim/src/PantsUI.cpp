@@ -7,8 +7,7 @@
 namespace pants {
 namespace sim {
 void PantsUI::redraw(const std::array<char, mem_size> &mem) {
-    SDL_Color white = {0, 0, 0};
-    SDL_Color black = {0xff, 0xff, 0xff};
+    SDL_Color black = {0xff, 0xff, 0xff, 0xff};
 
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
     SDL_RenderClear(m_renderer);
