@@ -213,10 +213,6 @@ Token Lexer::LexStringToken(Token::Kind kind,
 Token Lexer::PeekMore() {
     auto tok = LexImpl();
 
-#ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.ToString());
-#endif
-
     m_peeked.push(tok);
 
     return tok;
@@ -228,10 +224,6 @@ Token Lexer::Peek() {
     }
 
     auto tok = LexImpl();
-
-#ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.ToString());
-#endif
 
     m_peeked.push(tok);
 
@@ -246,10 +238,6 @@ Token Lexer::Lex() {
     }
 
     auto tok = LexImpl();
-
-#ifdef TRACE_LEXING
-    fmt::print("Lexed {}\n", token.ToString());
-#endif
 
     return tok;
 }
