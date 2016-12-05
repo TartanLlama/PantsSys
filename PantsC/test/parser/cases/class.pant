@@ -1,0 +1,25 @@
+#{
+--test case--
+<<ClassDecl vec2>>
+  <<VarDecl>>
+    <<Type u32>>
+    <<Id x>>
+  <<VarDecl>>
+    <<Type u32>>
+    <<Id y>>
+<<FuncDecl>>
+  <<Id entry>>
+  <<Type nil>>
+  <<VarDecl>>
+    <<Type id(vec2)>>
+    <<Id a>>
+--end test case--
+}#
+
+class vec2 is
+      u32 x; u32 y;
+end
+
+func entry [] -> nil is
+     vec2 a;
+end

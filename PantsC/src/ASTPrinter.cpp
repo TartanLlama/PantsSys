@@ -151,10 +151,10 @@ void ASTPrinter::down() {
 
 void ASTPrinter::print(const std::string& str) {
     for (std::size_t i = 0; i < m_depth; ++i) {
-        std::cout << "  ";
+        m_os << "  ";
     }
 
-    std::cout << str << '\n';
+    m_os << str << '\n';
 }
 
 }

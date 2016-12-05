@@ -7,4 +7,5 @@ project "PantsC"
     links {"fmt"}
     files {"include/**.hpp", "src/**.cpp"}
 
-include "test/lexer"    
+include "test/lexer"
+include "test/parser"    

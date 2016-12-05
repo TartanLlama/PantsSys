@@ -30,10 +30,8 @@ int main(int argc, const char *argv[]) {
         file.close();
         file.open(file_name);
 
-        pants::ASTPrinter printer;
-        for (auto node = ast.NodesBegin(), end = ast.NodesEnd(); node != end; ++node) {
-            (*node)->Accept(printer);
-        }
+        pants::ASTPrinter printer{std::cout};
+        printer.Visit(ast);
     }
     catch (pants::Parser::ParseError e) {
         pants::PrintDiags(parser.diags(), file);
