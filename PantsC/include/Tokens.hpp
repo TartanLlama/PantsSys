@@ -234,7 +234,7 @@ class Token {
         case eof_:
             return "eof";
         default:
-            assert(false);
+            throw std::runtime_error(fmt::format("Unhandled token kind {}", m_kind)); 
         }
     }
 
