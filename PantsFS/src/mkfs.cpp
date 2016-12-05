@@ -35,6 +35,10 @@ void WriteRootDir(std::ostream &file) {
     dir.type = static_cast<uint32_t>(FileType::Directory);
     dir.size = 0;
     dir.blocks[0] = 3; // first block after root dir metafile
+
+    //TODO finish
+    (void)file;
+    (void)dir;
 }
 
 int main(int argc, char *argv[]) {
