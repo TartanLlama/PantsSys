@@ -71,6 +71,8 @@ template <> inline Token Lexer::LexMultiToken<'e'>() {
             return LexStringToken(Token::enum_, "enum", "en");
         case 'd':
             return CheckedMakeToken(Token::end_, "end");
+        default:
+            return LexId("en");
         }
     }
 
