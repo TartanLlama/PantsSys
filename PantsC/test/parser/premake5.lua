@@ -12,7 +12,7 @@ function addGeneratedTests(base, prj)
    return base(prj)
 end
 
-project "PantsCLexerTest"
+project "PantsCParserTest"
     premake.override(premake.oven, "bakeFiles", addGeneratedTests)
 
     kind "ConsoleApp"
@@ -24,6 +24,7 @@ project "PantsCLexerTest"
     links {"fmt"}
     prebuildcommands { "cd %{prj.basedir} && python generate_tests.py" }
     postbuildcommands { "rm %{prj.basedir}/testcase_*" }
-    files {"../CatchMain.cpp", "../../src/Lexer.cpp", "cases/**.pant"}
+    files {"../CatchMain.cpp", "../../src/Parser.cpp", "../../src/Lexer.cpp", "../../src/ASTVisitor.cpp",
+           "../../src/ASTPrinter.cpp", "cases/**.pant"}
 
 

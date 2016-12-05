@@ -24,6 +24,7 @@ class BinaryOp;
 class Call;
 class UnaryOp;
 class Type;
+class AST;
 
 class ASTVisitor {
   public:
@@ -46,6 +47,8 @@ class ASTVisitor {
     virtual void Visit(Call &) = 0;
     virtual void Visit(UnaryOp &) = 0;
     virtual void Visit(Type &) = 0;
+
+    virtual void Visit(AST &);
 };
 
 class ASTNode {
