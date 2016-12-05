@@ -240,6 +240,9 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::comma_:
     case Token::rparen_:
         return 0;
+        
+    default:
+        throw std::runtime_error(fmt::format("Unhandled left binding power token {}", tok.ToString()));
     }
 }
 

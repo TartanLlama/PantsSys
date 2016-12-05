@@ -239,13 +239,14 @@ class Token {
     }
 
   private:
+    Kind m_kind;
+    std::size_t m_row, m_col;
     struct Dummy {};
     union {
         Dummy m_dummy;
         int m_int;
         std::string m_string;
     };
-    std::size_t m_row, m_col;
-    Kind m_kind;
+
 };
 }

@@ -74,15 +74,19 @@ void ASTPrinter::Visit(EnumDecl &node) {
 
 void ASTPrinter::Visit(For &node) {
     print("<<For>>");
+    (void)node;
 }
 void ASTPrinter::Visit(While &node) {
     print("<<While>>");
+    (void)node;
 }
 void ASTPrinter::Visit(Expr &node) {
     print("<<Expr>>");
+    (void)node;
 }
 void ASTPrinter::Visit(Assign &node) {
     print("<<Assign>>");
+    (void)node;
 }
 void ASTPrinter::Visit(If &node) {
     print("<<If>>");
@@ -134,6 +138,7 @@ void ASTPrinter::Visit(Call &node) {
 }
 void ASTPrinter::Visit(UnaryOp &node) {
     print("<<UnaryOp>>");
+    (void)node;
 }
 
 void ASTPrinter::Visit(Type &node) {
