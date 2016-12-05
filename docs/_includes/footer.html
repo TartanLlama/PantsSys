@@ -18,31 +18,39 @@
             </a>
           </div>
           {% endif %}
+          {% if site.blog %}
+          <div>
+            <a href="https://github.com/{{ site.blog }}">
+              <span class="username">blog: {{ site.blog }}</span>
+            </a>
+          </div>
+          
+          {% endif %}
           {% if site.github_username %}
           <div>
             <a href="https://github.com/{{ site.github_username }}">
-              <span class="username">github//{{ site.github_username }}</span>
+              <span class="username">github: {{ site.github_username }}</span>
             </a>
           </div>
           {% endif %}
           {% if site.twitter_username %}
           <div>
             <a href="https://twitter.com/{{ site.twitter_username }}">
-              <span class="username">twitter//{{ site.twitter_username }}</span>
+              <span class="username">twitter: {{ site.twitter_username }}</span>
             </a>
           </div>
           {% endif %}
           {% if site.linkedin_username %}
           <div>
             <a href="https://id.linkedin.com/in/{{ site.linkedin_username }}">
-              <span class="username">linkedin//{{ site.linkedin_username }}</span>
+              <span class="username">linkedin: {{ site.linkedin_username }}</span>
             </a>
           </div>
           {% endif %}
           {% if site.facebook_username %}
           <div>
             <a href="https://www.facebook.com/{{ site.facebook_username }}">
-              <span class="username">facebook//{{ site.facebook_username }}</span>
+              <span class="username">facebook: {{ site.facebook_username }}</span>
             </a>
           </div>
           {% endif %}
