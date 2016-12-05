@@ -29,3 +29,4 @@ script:
   - make config=$CONFIG all
   - cd build/bin/$BUILD_DIR
   - ./PantsSimTest
+  - ./PantsCLexerTest
