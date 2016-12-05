@@ -6,3 +6,5 @@ project "PantsC"
     includedirs {"include", "../ext/fmt", "../ext", "../Common/include"}
     links {"fmt"}
     files {"include/**.hpp", "src/**.cpp"}
+
+include "test/lexer"    

@@ -29,7 +29,6 @@ project "fmt"
     includedirs {"ext/fmt"}
     files {"ext/fmt/fmt/**.h", "ext/fmt/fmt/**.cc"}
 
-
 include "PantsAsm"
 include "PantsC"
 include "PantsFS"

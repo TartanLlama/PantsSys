@@ -1,0 +1,28 @@
+#{
+--test case--
+func
+id(entry)
+lsquare
+rsquare
+arrow
+u32
+is
+int(1)
+add
+int(1)
+semi
+end
+eof
+--end test case--
+}#
+
+# Single line comment
+
+#{multi
+line
+comment}#
+
+func entry[] -> u32 #{multi line comment inside stuff}# is
+    # single line comment in function body
+    1 + #{more multi line comments inside stuff}#1;
+end 
