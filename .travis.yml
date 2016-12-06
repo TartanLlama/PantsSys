@@ -20,11 +20,11 @@ matrix:
 
       - os: osx
         compiler: clang
-        env: CONFIG=release_osx BUILD_DIR=Release TOOLCHAIN="clang++-3.7"
+        env: CONFIG=release_osx BUILD_DIR=Release TOOLCHAIN="clang++"
 
       - os: osx
         compiler: clang
-        env: CONFIG=debug_osx BUILD_DIR=Debug TOOLCHAIN="clang++-3.7"
+        env: CONFIG=debug_osx BUILD_DIR=Debug TOOLCHAIN="clang++"
 
 
 git:
