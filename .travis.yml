@@ -49,7 +49,11 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git clone https://github.com/sbx320/premake5-travis.git   ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mv premake5-travis/premake5 .                             ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then chmod +x premake5                                         ; fi
-  
+
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sdl2    ; fi
+
+
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PREMAKE_AR=premake-5.0.0-alpha10-macosx.tar.gz; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/${PREMAKE_AR}                                                                                     ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar zxvf $PREMAKE_AR                                       ; fi
