@@ -1,6 +1,12 @@
 language: cpp
-compiler: gcc
-os: linux
+
+matrix:
+  include:
+      - os: linux
+        compiler: gcc
+
+      - os: linux
+        compiler: clang
 
 git:
   submodules: false
