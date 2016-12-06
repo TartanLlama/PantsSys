@@ -21,7 +21,7 @@ matrix:
 
       - os: linux
         compiler: clang
-        CONFIG=debug_linux BUILD_DIR=Debug
+        env: CONFIG=debug_linux BUILD_DIR=Debug
         addons:
           apt:
             sources: ['ubuntu-toolchain-r-test']
@@ -29,7 +29,7 @@ matrix:
 
       - os: linux
         compiler: clang
-        CONFIG=release_linux BUILD_DIR=Release
+        env: CONFIG=release_linux BUILD_DIR=Release
         addons:
           apt:
             sources: ['ubuntu-toolchain-r-test']
@@ -37,11 +37,11 @@ matrix:
 
       - os: osx
         compiler: clang
-        CONFIG=release_osx BUILD_DIR=Release
+        env: CONFIG=release_osx BUILD_DIR=Release
 
       - os: osx
         compiler: clang
-        CONFIG=debug_osx BUILD_DIR=Debug
+        env: CONFIG=debug_osx BUILD_DIR=Debug
 
 
 git:
