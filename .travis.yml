@@ -4,9 +4,19 @@ matrix:
   include:
       - os: linux
         compiler: gcc
+        env: CONFIG=debug_linux BUILD_DIR=Debug
+
+      - os: linux
+        compiler: gcc
+        env: CONFIG=release_linux BUILD_DIR=Release
 
       - os: linux
         compiler: clang
+        CONFIG=debug_linux BUILD_DIR=Debug
+
+      - os: linux
+        compiler: clang
+        CONFIG=release_linux BUILD_DIR=Release
 
 git:
   submodules: false
@@ -20,11 +30,6 @@ before_install:
     - sudo apt-get update
     - sudo apt-get install -qq g++-5
     - sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
-
-env:
-  - CONFIG=debug_linux BUILD_DIR=Debug
-  - CONFIG=release_linux BUILD_DIR=Release
-
 
 before_script:
   - git clone https://github.com/sbx320/premake5-travis.git
