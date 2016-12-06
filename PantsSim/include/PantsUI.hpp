@@ -4,7 +4,7 @@
 
 #define SDL_MAIN_HANDLED
 
-#ifdef __linux__
+#ifdef __linux__ || __APPLE__
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
