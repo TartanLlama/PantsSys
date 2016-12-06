@@ -1,6 +1,0 @@
-[submodule "fmt"]
-	path = ext/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "ext/argh"]
-	path = ext/argh
-	url = https://github.com/adishavit/argh.git
