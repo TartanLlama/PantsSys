@@ -1,6 +1,6 @@
 workspace "PantsSys"
     configurations { "Debug", "Release" }
-    platforms { "Win64", "Linux" }
+    platforms { "Win64", "Linux", "OSX" }
 
     flags {"ExtraWarnings", "FatalWarnings"}
 
@@ -12,6 +12,11 @@ filter "platforms:Linux"
     system "Linux"
     architecture "x64"
 
+filter "platforms:OSX"
+    system "MacOSX"
+    architecture "x64"
+
+    
 filter "configurations:Debug"
       defines { "DEBUG" }
       flags { "Symbols" }
