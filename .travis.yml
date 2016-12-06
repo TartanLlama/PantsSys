@@ -5,35 +5,18 @@ matrix:
       - os: linux
         compiler: gcc
         env: CONFIG=debug_linux BUILD_DIR=Debug
-        addons:
-          apt:
-            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
-            packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: linux
         compiler: gcc
         env: CONFIG=release_linux BUILD_DIR=Release
-        addons:
-          apt:
-            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
-            packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
-        
 
       - os: linux
         compiler: clang
         env: CONFIG=debug_linux BUILD_DIR=Debug
-        addons:
-          apt:
-            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
-            packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: linux
         compiler: clang
         env: CONFIG=release_linux BUILD_DIR=Release
-        addons:
-          apt:
-            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
-            packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: osx
         compiler: clang
@@ -50,6 +33,14 @@ git:
 before_install:
     - sed 's/git@github.com:/https:\/\/github.com\//' -i.bu .gitmodules
     - git submodule update --init --recursive
+
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update                                    ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq g++-5                         ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsdl2-dev                       ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsdl2-ttf-dev libsdl2-image-dev ; fi
+    
 
 before_script:
   - git clone https://github.com/sbx320/premake5-travis.git
