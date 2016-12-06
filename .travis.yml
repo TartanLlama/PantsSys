@@ -51,7 +51,7 @@ before_script:
   - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha10/${PREMAKE_AR}
   - tar zxvf $PREMAKE_AR
   - chmod +x premake5
-  - .premake5 gmake
+  - ./premake5 gmake
 
 script:
   - make config=$CONFIG all
