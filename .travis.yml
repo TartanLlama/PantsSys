@@ -4,11 +4,11 @@ matrix:
   include:
       - os: linux
         compiler: gcc
-        env: CONFIG=debug_linux BUILD_DIR=Debug
+        env: CONFIG=debug_linux BUILD_DIR=Debug CXX=g++-5
 
       - os: linux
         compiler: gcc
-        env: CONFIG=release_linux BUILD_DIR=Release
+        env: CONFIG=release_linux BUILD_DIR=Release CXX=g++-5
 
       - os: linux
         compiler: clang
