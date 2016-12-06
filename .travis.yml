@@ -7,7 +7,7 @@ matrix:
         env: CONFIG=debug_linux BUILD_DIR=Debug
         addons:
           apt:
-            sources: ['ubuntu-toolchain-r-test']
+            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
             packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: linux
@@ -15,7 +15,7 @@ matrix:
         env: CONFIG=release_linux BUILD_DIR=Release
         addons:
           apt:
-            sources: ['ubuntu-toolchain-r-test']
+            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
             packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
         
 
@@ -24,7 +24,7 @@ matrix:
         env: CONFIG=debug_linux BUILD_DIR=Debug
         addons:
           apt:
-            sources: ['ubuntu-toolchain-r-test']
+            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
             packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: linux
@@ -32,7 +32,7 @@ matrix:
         env: CONFIG=release_linux BUILD_DIR=Release
         addons:
           apt:
-            sources: ['ubuntu-toolchain-r-test']
+            sources: ['ubuntu-toolchain-r-test', 'ppa:zoogie/sdl2-snapshots']
             packages: ['g++-5', 'libsdl2-dev', 'libsdl2-ttf-dev', 'libsdl2-image-dev']
 
       - os: osx
