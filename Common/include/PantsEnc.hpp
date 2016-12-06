@@ -5,7 +5,7 @@
 static constexpr size_t n_chars = 240;
 static constexpr char undef = 7; // system bell
 
-const std::array<char, n_chars> decode_table{
+const std::array<char, n_chars> decode_table{{
     '\0',  '\b',  'a',   'b',   '\t',  'c',   '\n',  'd',   '\r',  ' ',
     '!',   'e',   '\"',  'f',   '#',   '$',   '%',   'g',   '&',   'h',
     '\'',  '(',   '*',   'i',   ')',   '+',   ',',   '-',   '.',   'j',
@@ -30,4 +30,4 @@ const std::array<char, n_chars> decode_table{
     undef, undef, undef, undef, undef, undef, 'U',   undef, undef, undef,
     undef, undef, undef, undef, undef, undef, undef, undef, 'V',   undef,
     undef, undef, 'W',   undef, 'X',   undef, undef, undef, 'Y',   undef,
-    undef, undef, undef, undef, 'Z'};
+    undef, undef, undef, undef, 'Z'}};
