@@ -55,6 +55,6 @@ newaction {
     description = "generate the documentation",
     execute     = function ()
       print("generating documentation...")
-      os.execute("standardese PantsAsm/include")
+      os.execute("standardese --output.format html PantsC/include -I ext/fmt -I ext -I Common/include -I PantsC/include")
     end
 }

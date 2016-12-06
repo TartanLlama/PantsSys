@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "Tokens.hpp"
-#include "Type.hpp"
 
 namespace pants {
 class Id;
