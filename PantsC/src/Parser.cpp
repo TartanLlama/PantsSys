@@ -12,8 +12,6 @@ Parser::Parser(Lexer &lexer) : m_lexer{lexer} {}
 Token Parser::Lex() { return m_lexer.Lex(); }
 
 bool Parser::CouldBeType(Token tok) {
-    //TODO implement user-defined types
-
     switch (tok) {
     case Token::u8_:
     case Token::u16_:
@@ -343,7 +341,7 @@ ExprUP Parser::ParseSubExpression(int right_binding_power) {
         next = new_next;
     }
 
-    return std::move(left);
+    return left;
 }
 
 ASTNodeUP Parser::ParseExpression() {

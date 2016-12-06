@@ -6,7 +6,7 @@ namespace pants {
 template <char C> Token Lexer::LexMultiToken() {
     static_assert(DependentFalse<std::integral_constant<char, C>>::value,
                   "Not implemented");
-    return Token::eof_;              
+    return MakeToken(Token::eof_);
 }
 
 template <> inline Token Lexer::LexMultiToken<'-'>() {
