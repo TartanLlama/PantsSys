@@ -38,7 +38,7 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update                                    ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq g++-5 clang-3.7               ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq g++-5 clang-3.7 --force-yes   ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsdl2-dev                       ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsdl2-ttf-dev libsdl2-image-dev ; fi
     
