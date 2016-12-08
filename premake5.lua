@@ -25,19 +25,12 @@ filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
 
--- External dependencies
-project "fmt"
-    kind "StaticLib"
-    language "C++"
-    flags {"C++14"}
-    targetdir "build/lib/%{cfg.buildcfg}"
-    includedirs {"ext/fmt"}
-    files {"ext/fmt/fmt/**.h", "ext/fmt/fmt/**.cc"}
-
 include "PantsAsm"
 include "PantsC"
 include "PantsFS"
 include "PantsSim"
+
+include "ext"
 
 -- Clean Function --
 newaction {
