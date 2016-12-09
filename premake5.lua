@@ -1,27 +1,7 @@
 workspace "PantsSys"
     configurations { "Debug", "Release" }
-    platforms { "Win64", "Linux", "OSX" }
-
     flags {"ExtraWarnings", "FatalWarnings"}
-    
-filter "platforms:Win64"
     system "Windows"
-    architecture "x64"
-    -- 4814 = constxpr doesn't imply const (used in optional)
-    -- 4129 = unrecognied character escape sequence (used in catch)
-    -- 4702 = unreachable code (exists in optional, used for maintainability in default cases of switches)
-    disablewarnings{"4814", "4129", "4702"}
-
-    -- No checked iterators
-    defines {"_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS"}
-
-
-filter "platforms:Linux"
-    system "Linux"
-    architecture "x64"
-
-filter "platforms:OSX"
-    system "MacOSX"
     architecture "x64"
 
     
