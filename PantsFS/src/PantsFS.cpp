@@ -4,10 +4,10 @@
 namespace pants {
 namespace fs {
 
-uint32_t NextUnusedBlock(std::istream &is, uint32_t block_id,
+uint16_t NextUnusedBlock(std::istream &is, uint32_t block_id,
                          bool can_allocate) {
     is.seekg(ByteFromBlockID(block_id));
-    uint32_t prev, next;
+    uint16_t prev, next;
     is >> prev >> next;
     if (next != g_invalid_block_id) {
         return next;
@@ -21,9 +21,9 @@ uint32_t NextUnusedBlock(std::istream &is, uint32_t block_id,
 }
 
 
-uint32_t PrevUnusedBlock(std::istream &is, uint32_t block_id) {
+uint16_t PrevUnusedBlock(std::istream &is, uint32_t block_id) {
     is.seekg(ByteFromBlockID(block_id));
-    uint32_t prev;
+    uint16_t prev;
     is >> prev;
     return prev;
 }
@@ -49,7 +49,7 @@ void AllocateBlockGroup(std::iostream &is, Superblock &super) {
 
     super.block_count += g_blocks_per_block_group;
 
-    for (size_t i = 0; i < g_blocks_per_metafile * g_block_size; ++i) {
+    for (size_t j = 0; j < g_blocks_per_metafile * g_block_size; ++j) {
         is << uint32_t{0};
     }
 }

@@ -75,7 +75,7 @@ struct BlockGroup {
     Metafile metafile_table[g_metafiles_per_block_group]; //< The metafiles tracked by this block group
     uint16_t first_unused_metafile; //< Index into [pants::fs::BlockGroup::metafile_table]() for the first unused metafile
     uint16_t unused_metafile_count; //< Number of unused metafiles in [pants::fs::BlockGroup::metafile_table]()
-    uint16_t first_unused_block; //< Block ID of the first unused block for this block group
+    uint16_t first_unused_block; //< Group-local block ID of the first unused block for this block group
     uint16_t unused_block_count; //< Number of unused blocks in this block group
 };
 
@@ -136,10 +136,10 @@ inline uint32_t ByteFromMetafileID(uint32_t metafile_id) {
     return 0;
 }
 
-uint32_t NextUnusedBlock(std::istream &is, uint32_t block_id,
+uint16_t NextUnusedBlock(std::istream &is, uint32_t block_id,
                          bool can_allocate = false);
 
-uint32_t PrevUnusedBlock(std::istream &is, uint32_t block_id);
+uint16_t PrevUnusedBlock(std::istream &is, uint32_t block_id);
 
 
 inline void SetPrevUnusedBlock(std::ostream &os, uint32_t block_id, uint32_t prev) {
