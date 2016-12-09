@@ -167,18 +167,18 @@ Token Lexer::LexHex() {
     (void)GetChar();
 
     while (true) {
-        auto c = PeekChar();
-        if (c == EOF) {
+        auto ic = PeekChar();
+        if (ic == EOF) {
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
         }
 
-        if (ishex(c)) {
+        if (ishex(ic)) {
             (void)GetChar();
-            str_i += c;
-        } else if (isalpha(c)) {
+            str_i += ic;
+        } else if (isalpha(ic)) {
             IssueDiagnostic("Malformed int");
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
-        } else if (isspace(c)) {
+        } else if (isspace(ic)) {
             break;
         }
     }
