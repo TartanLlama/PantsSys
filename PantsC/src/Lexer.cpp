@@ -13,7 +13,7 @@ bool ishex(char c) {
 
 namespace pants {
 char Lexer::GetChar() {
-    char c = m_is.get();
+    char c = static_cast<char>(m_is.get());
     if (!m_is)
         return EOF;
 
@@ -28,7 +28,7 @@ char Lexer::GetChar() {
 }
 
 char Lexer::PeekChar() {
-    char c = m_is.peek();
+    char c = static_cast<char>(m_is.peek());
     if (!m_is)
         return EOF;
 
