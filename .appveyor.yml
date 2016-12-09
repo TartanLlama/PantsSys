@@ -55,5 +55,5 @@ install:
 
   - git submodule update --init --recursive
 
-build-script:
+build_script:
   msbuild /m /p:Configuration=Release /p:Platform="Win64" PantsSys.sln
