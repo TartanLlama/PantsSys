@@ -56,4 +56,4 @@ install:
   - git submodule update --init --recursive
 
 build:
-  project: PantsSys.sln
+  msbuild /m /p:Configuration="Debug Win53" /p:Platform="Win64" cpp_dependencies.sln
