@@ -6,7 +6,8 @@ workspace "PantsSys"
     
     -- 4814 = constxpr doesn't imply const (used in optional)
     -- 4129 = unrecognied character escape sequence (used in catch)
-    disablewarnings{"4814", "4129"}
+    -- 4702 = unreachable code (exists in optional, used for maintainability in default cases of switches)
+    disablewarnings{"4814", "4129", "4702"}
 
 filter "platforms:Win64"
     system "Windows"
