@@ -39,11 +39,11 @@ void Lexer::EatMultiLineComment() {
     //assume that we've already read #{
     
     while (true) {
-        auto mc = PeekChar();
+        auto c = PeekChar();
 
-        if (mc == EOF) return;
+        if (c == EOF) return;
 
-        if (mc == '}') {
+        if (c == '}') {
             (void)GetChar();
             if (PeekChar() == '#') {
                 (void)GetChar();
@@ -59,12 +59,12 @@ void Lexer::EatSingleLineComment() {
     //assume that we've already read #
     
     while (true) {
-        auto mc = PeekChar();
+        auto c = PeekChar();
 
-        if (mc == EOF)
+        if (c == EOF)
             return;
 
-        if (mc == '\n') {
+        if (c == '\n') {
             (void)GetChar();
             return;
         }
@@ -88,14 +88,14 @@ void Lexer::EatComment() {
     
 void Lexer::EatWhitespaceAndComments() {
     while (true) {
-        auto mc = PeekChar();
-        if (mc == EOF)
+        auto c = PeekChar();
+        if (c == EOF)
             return;
 
-        if (mc == '#') {
+        if (c == '#') {
             EatComment();
         }
-        else if (!isspace(mc)) {
+        else if (!isspace(c)) {
             return;
         } else {
             (void)GetChar();
@@ -110,34 +110,34 @@ Token Lexer::LexCharToken(Token::Kind kind) {
 
 Token Lexer::LexId(std::string so_far) {
     while (true) {
-        auto mc = PeekChar();
-        if (mc == EOF) {
+        auto c = PeekChar();
+        if (c == EOF) {
             return MakeToken(Token::id_, so_far);
         }
 
-        if (!isalnum(mc)) {
+        if (!isalnum(c)) {
             return MakeToken(Token::id_, so_far);
         }
 
         (void)GetChar();
-        so_far += mc;
+        so_far += c;
     }
 }
 
 Token Lexer::LexInt() {
-    auto mc = GetChar();
-    std::string str_i{mc};
+    auto c = GetChar();
+    std::string str_i{c};
 
     while (true) {
-        auto mc = PeekChar();
-        if (mc == EOF) {
+        auto ic = PeekChar();
+        if (ic == EOF) {
             return MakeToken(Token::int_, std::stoi(str_i));
         }
 
-        if (isdigit(mc)) {
+        if (isdigit(ic)) {
             (void)GetChar();
-            str_i += mc;
-        } else if (isalpha(mc)) {
+            str_i += ic;
+        } else if (isalpha(ic)) {
             IssueDiagnostic("Malformed int");
             return MakeToken(Token::int_, std::stoi(str_i));
         } else {
@@ -151,34 +151,34 @@ Token Lexer::LexInt() {
 Token Lexer::LexHex() {
     std::string str_i{GetChar()};
 
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::int_, 0);
     }
 
-    if (isdigit(mc)) {
+    if (isdigit(c)) {
         IssueDiagnostic("Ints cannot begin with a 0");
         return MakeToken(Token::int_, 0);
     }
 
-    if (mc != 'x' && mc != 'X') {
+    if (c != 'x' && c != 'X') {
         return MakeToken(Token::int_, 0);
     }
     (void)GetChar();
 
     while (true) {
-        auto mc = PeekChar();
-        if (mc == EOF) {
+        auto c = PeekChar();
+        if (c == EOF) {
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
         }
 
-        if (ishex(mc)) {
+        if (ishex(c)) {
             (void)GetChar();
-            str_i += mc;
-        } else if (isalpha(mc)) {
+            str_i += c;
+        } else if (isalpha(c)) {
             IssueDiagnostic("Malformed int");
             return MakeToken(Token::int_, std::stoi(str_i, 0, 16));
-        } else if (isspace(mc)) {
+        } else if (isspace(c)) {
             break;
         }
     }
@@ -189,22 +189,22 @@ Token Lexer::LexHex() {
 Token Lexer::LexStringToken(Token::Kind kind,
                                           const std::string &str,
                                           std::string so_far) {
-    auto mc = GetChar();
-    so_far += mc;
+    auto c = GetChar();
+    so_far += c;
 
     auto size = str.size();
     for (std::size_t i = so_far.size(); i < size; ++i) {
-        auto mc = PeekChar();
-        if (mc == EOF) {
+        auto ic = PeekChar();
+        if (ic == EOF) {
             return LexId(so_far);
         }
 
-        if (mc != str[i]) {
+        if (ic != str[i]) {
             return LexId(so_far);
         }
 
         (void)GetChar();
-        so_far += mc;
+        so_far += ic;
     }
     UngetChar();
     return CheckedMakeToken(kind, str);
@@ -245,12 +245,11 @@ Token Lexer::Lex() {
 Token Lexer::LexImpl() {
     EatWhitespaceAndComments();
     
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::eof_);
     }
 
-    auto c = mc;
     switch (c) {
     case '+':
         return LexCharToken(Token::add_);
@@ -336,8 +335,8 @@ Token Lexer::LexImpl() {
 Token Lexer::CheckedMakeToken(Token::Kind kind,
                                             const std::string &str) {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc != EOF && isalnum(mc)) {
+    auto c = PeekChar();
+    if (c != EOF && isalnum(c)) {
         return LexId(str);
     }
     return MakeToken(kind);

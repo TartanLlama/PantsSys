@@ -58,6 +58,8 @@ class Parser {
     bool IsBinOp(Token tok);
 
     Token Lex();
+    Token Peek();
+    Token PeekMore();
 
     Lexer &m_lexer;
     std::vector<Diagnostic> m_diags;
