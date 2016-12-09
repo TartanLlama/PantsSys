@@ -11,8 +11,8 @@ template <char C> Token Lexer::LexMultiToken() {
 
 template <> inline Token Lexer::LexMultiToken<'-'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc != EOF && mc == '>') {
+    auto c = PeekChar();
+    if (c != EOF && c == '>') {
         (void)GetChar();
         return MakeToken(Token::arrow_);
     }
@@ -22,12 +22,12 @@ template <> inline Token Lexer::LexMultiToken<'-'>() {
 
 template <> inline Token Lexer::LexMultiToken<'i'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "i");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'n':
         return CheckedMakeToken(Token::in_, "in");
     case 's':
@@ -52,22 +52,22 @@ template <> inline Token Lexer::LexMultiToken<'i'>() {
 
 template <> inline Token Lexer::LexMultiToken<'e'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "e");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'l':
         return LexStringToken(Token::else_, "else", "e");
     case 'n': {
         (void)GetChar();
-        auto mc = PeekChar();
-        if (mc == EOF) {
+        auto ic = PeekChar();
+        if (ic == EOF) {
             return MakeToken(Token::id_, "en");
         }
 
-        switch (mc) {
+        switch (ic) {
         case 'u':
             return LexStringToken(Token::enum_, "enum", "en");
         case 'd':
@@ -84,12 +84,12 @@ template <> inline Token Lexer::LexMultiToken<'e'>() {
 
 template <> inline Token Lexer::LexMultiToken<'f'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "f");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'o':
         return LexStringToken(Token::for_, "for", "f");
     case 'a':
@@ -104,12 +104,12 @@ template <> inline Token Lexer::LexMultiToken<'f'>() {
 
 template <> inline Token Lexer::LexMultiToken<'c'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "c");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'h':
         return LexStringToken(Token::char_, "char", "c");
     case 'l':
@@ -122,12 +122,12 @@ template <> inline Token Lexer::LexMultiToken<'c'>() {
 
 template <> inline Token Lexer::LexMultiToken<'n'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "n");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'o':
         return LexStringToken(Token::not_, "not", "n");
     case 'i':
@@ -140,12 +140,12 @@ template <> inline Token Lexer::LexMultiToken<'n'>() {
 
 template <> inline Token Lexer::LexMultiToken<'t'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc == EOF) {
+    auto c = PeekChar();
+    if (c == EOF) {
         return MakeToken(Token::id_, "t");
     }
 
-    switch (mc) {
+    switch (c) {
     case 'e':
         return LexStringToken(Token::template_, "template", "t");
     case 'r':
@@ -158,8 +158,8 @@ template <> inline Token Lexer::LexMultiToken<'t'>() {
 
 template <> inline Token Lexer::LexMultiToken<'='>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc != EOF && mc == '=') {
+    auto c = PeekChar();
+    if (c != EOF && c == '=') {
         (void)GetChar();
         return MakeToken(Token::eq_);
     }
@@ -169,8 +169,8 @@ template <> inline Token Lexer::LexMultiToken<'='>() {
 
 template <> inline Token Lexer::LexMultiToken<'<'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc != EOF && mc == '=') {
+    auto c = PeekChar();
+    if (c != EOF && c == '=') {
         (void)GetChar();
         return MakeToken(Token::le_);
     }
@@ -180,8 +180,8 @@ template <> inline Token Lexer::LexMultiToken<'<'>() {
 
 template <> inline Token Lexer::LexMultiToken<'>'>() {
     (void)GetChar();
-    auto mc = PeekChar();
-    if (mc != EOF && mc == '=') {
+    auto c = PeekChar();
+    if (c != EOF && c == '=') {
         (void)GetChar();
         return MakeToken(Token::ge_);
     }
@@ -191,13 +191,13 @@ template <> inline Token Lexer::LexMultiToken<'>'>() {
 
 template <> inline Token Lexer::LexMultiToken<'u'>() {
     (void)GetChar();
-    auto mc = PeekChar();
+    auto c = PeekChar();
 
-    if (mc == EOF) {
+    if (c == EOF) {
         return MakeToken(Token::id_, "u");
     }
 
-    switch (mc) {
+    switch (c) {
     case '8':
         return CheckedMakeToken(Token::u8_, "u8");
     case '1':
