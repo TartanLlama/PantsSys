@@ -10,6 +10,8 @@ namespace pants {
 Parser::Parser(Lexer &lexer) : m_lexer{lexer} {}
 
 Token Parser::Lex() { return m_lexer.Lex(); }
+Token Parser::Peek() { return m_lexer.Peek(); }
+Token Parser::PeekMore() { return m_lexer.PeekMore(); }
 
 bool Parser::CouldBeType(Token tok) {
     switch (tok) {
@@ -63,7 +65,7 @@ void Parser::ExpectToken(Token::Kind k) {
 std::vector<ASTNodeUP> Parser::ParseTopLevelDecls() {
     std::vector<ASTNodeUP> nodes;
 
-    for (auto tok = m_lexer.Peek(); tok != Token::eof_; tok = m_lexer.Peek()) {
+    for (auto tok = Peek(); tok != Token::eof_; tok = Peek()) {
         switch (tok.Type()) {
         case Token::func_:
             nodes.push_back(ParseFunc());
@@ -101,7 +103,7 @@ ASTNodeUP Parser::ParseClass() {
     ExpectToken(Token::is_);
 
     std::vector<VarDeclUP> members{};
-    for (auto tok = m_lexer.Peek(); tok != Token::end_; tok = m_lexer.Peek()) {
+    for (auto tok = Peek(); tok != Token::end_; tok = Peek()) {
         members.push_back(ParseVarDecl());
     }
 
@@ -116,13 +118,13 @@ ASTNodeUP Parser::ParseEnum() {
     ExpectToken(Token::is_);
 
     std::vector<Id> names{};
-    for (auto tok = m_lexer.Peek(); ; tok = m_lexer.Peek()) {
+    for (auto tok = Peek(); ; tok = Peek()) {
         names.push_back(ParseId());
 
-        if (m_lexer.Peek() == Token::end_) break;
+        if (Peek() == Token::end_) break;
 
         //allow trailing comma
-        if (m_lexer.Peek() == Token::comma_ && m_lexer.PeekMore() == Token::end_) {
+        if (Peek() == Token::comma_ && PeekMore() == Token::end_) {
             (void)Lex(); break;
         }
 
@@ -143,7 +145,7 @@ VarDeclUP Parser::ParseVarDecl() {
 
 
     //variable might have an initializer
-    auto tok = m_lexer.Peek();
+    auto tok = Peek();
     if (tok == Token::assign_) {
         Lex();
         init = ParseSubExpression();
@@ -167,7 +169,7 @@ ASTNodeUP Parser::ParseIf() {
     conds.emplace_back(std::move(cond),std::move(if_body));
 
     //parse else if statements
-    while (m_lexer.Peek() == Token::else_ && m_lexer.PeekMore() == Token::if_) {
+    while (Peek() == Token::else_ && PeekMore() == Token::if_) {
         (void)Lex(); (void)Lex();
         auto else_if_cond = ParseSubExpression();
         ExpectToken(Token::do_);
@@ -178,7 +180,7 @@ ASTNodeUP Parser::ParseIf() {
 
     //parse else
     std::vector<ASTNodeUP> else_body;
-    if (m_lexer.Peek() == Token::else_) {
+    if (Peek() == Token::else_) {
         (void)Lex();
         ExpectToken(Token::do_);
         else_body = ParseScopeBody();
@@ -294,13 +296,12 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
     {
         std::vector<ExprUP> args;
 
-        auto tok = m_lexer.Peek();
-        if (tok != Token::rparen_) {
+        if (Peek() != Token::rparen_) {
             while (true) {
                 args.push_back(ParseSubExpression());
 
-                auto tok = m_lexer.Peek();
-                if (tok == Token::rparen_) {
+                auto next_tok = Peek();
+                if (next_tok == Token::rparen_) {
                     break;
                 }
 
@@ -321,14 +322,9 @@ ExprUP Parser::LeftAction(Token tok, ExprUP left) {
 }
 
 ExprUP Parser::ParseSubExpression(int right_binding_power) {
-    auto tok_s = Lex();
-    auto tok = tok_s;
-
-    auto left_s = UnaryAction(tok);
-    auto left = std::move(left_s);
-
-    auto next_s = m_lexer.Peek();
-    auto next = next_s;
+    auto tok = Lex();
+    auto left = UnaryAction(tok);
+    auto next = Peek();
 
     while (right_binding_power < GetLeftBindingPower(next)) {
         Lex();
@@ -337,7 +333,7 @@ ExprUP Parser::ParseSubExpression(int right_binding_power) {
         auto new_left = LeftAction(tok, std::move(left));
         left = std::move(new_left);
 
-        auto new_next = m_lexer.Peek();
+        auto new_next = Peek();
         next = new_next;
     }
 
@@ -351,7 +347,7 @@ ASTNodeUP Parser::ParseExpression() {
 }
 
 ASTNodeUP Parser::ParseStatement() {
-    auto tok = m_lexer.Peek();
+    auto tok = Peek();
 
     switch (tok.Type()) {
     case Token::for_:
@@ -366,7 +362,7 @@ ASTNodeUP Parser::ParseStatement() {
         break;
     }
 
-    if (CouldBeType(tok) && m_lexer.PeekMore() == Token::id_) {
+    if (CouldBeType(tok) && PeekMore() == Token::id_) {
         return ParseVarDecl();
     }
 
@@ -378,7 +374,7 @@ std::vector<ASTNodeUP> Parser::ParseScopeBody() {
     std::vector<ASTNodeUP> body{};
 
     while (true) {
-        auto tok = m_lexer.Peek();
+        auto tok = Peek();
 
         if (tok == Token::end_)
             break;
@@ -419,7 +415,7 @@ ASTNodeUP Parser::ParseFunc() {
     std::vector<VarDeclUP> params{};
 
     while (true) {
-        auto tok = m_lexer.Peek();
+        auto tok = Peek();
 
         if (tok == Token::rsquare_) {
             break;
@@ -427,20 +423,20 @@ ASTNodeUP Parser::ParseFunc() {
 
         auto type = ParseType();
 
-        auto id = Lex();
-        if (id == Token::eof_) return nullptr;
+        auto param_id = Lex();
+        if (param_id == Token::eof_) return nullptr;
 
-        if (id != Token::id_) {
-            IssueDiagnostic(id, "Unexpected token {}",
-                            id.ToString());
+        if (param_id != Token::id_) {
+            IssueDiagnostic(param_id, "Unexpected token {}",
+                            param_id.ToString());
         }
 
         params.push_back(std::make_unique<VarDecl>(
-            type.Tok(), type, Id{id}));
+            type.Tok(), type, Id{param_id}));
 
         if (tok != Token::comma_) {
             IssueDiagnostic(tok, "Unexpected token {}",
-                            id.ToString());
+                            tok.ToString());
         }
     }
 

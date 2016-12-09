@@ -5,3 +5,4 @@ project "fmt"
     targetdir "build/lib/%{cfg.buildcfg}"
     includedirs {"fmt"}
     files {"fmt/fmt/**.h", "fmt/fmt/**.cc"}
+
