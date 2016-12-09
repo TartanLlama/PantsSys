@@ -33,7 +33,7 @@ int main(int argc, const char *argv[]) {
         pants::ASTPrinter printer{std::cout};
         printer.Visit(ast);
     }
-    catch (pants::Parser::ParseError e) {
+    catch (pants::Parser::ParseError) {
         pants::PrintDiags(parser.diags(), file);
     }
 }
