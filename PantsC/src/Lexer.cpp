@@ -5,7 +5,7 @@
 
 namespace {
 bool ishex(char c) {
-    c = tolower(c);
+    c = static_cast<char>(tolower(c));
     return isdigit(c) || c == 'a' || c == 'b' || c == 'c' || c == 'd' ||
            c == 'e' || c == 'f';
 }
