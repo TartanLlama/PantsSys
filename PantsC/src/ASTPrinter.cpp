@@ -6,11 +6,11 @@ using fmt::format;
 
 namespace pants {
 void ASTPrinter::Visit(Id &node) {
-    print(format("<<Id {}>>", node.String()));
+    print(format("<<Id {}>>", node.GetString()));
 }
 
 void ASTPrinter::Visit(Int &node) {
-    print(format("<<Int {}>>", node.Val()));
+    print(format("<<Int {}>>", node.GetInt()));
 }
 
 void ASTPrinter::Visit(Bool &node) {
@@ -35,38 +35,37 @@ void ASTPrinter::Visit(FuncDecl &node) {
 
     down();
 
-    node.Name().Accept(*this);
+    node.GetName().Accept(*this);
     node.GetType().Accept(*this);
 
-    for (auto it = node.ParamsBegin(), end = node.ParamsEnd(); it != end;
-         ++it) {
-        (*it)->Accept(*this);
+    for (auto&& param : node.GetParams()) {
+        param->Accept(*this);
     }
 
-    for (auto it = node.BodyBegin(), end = node.BodyEnd(); it != end; ++it) {
-        (*it)->Accept(*this);
+    for (auto&& statement : node.GetBody()) {
+        statement->Accept(*this);
     }
 
     up();
 }
 void ASTPrinter::Visit(ClassDecl &node) {
-    print(format("<<ClassDecl {}>>", node.Name().String()));
+    print(format("<<ClassDecl {}>>", node.GetName().GetString()));
 
     down();
 
-    for (auto it = node.VarsBegin(), end = node.VarsEnd(); it != end; ++it) {
-        (*it)->Accept(*this);
+    for (auto&& var : node.GetVars()) {
+        var->Accept(*this);
     }
 
     up();
 }
 void ASTPrinter::Visit(EnumDecl &node) {
-    print(format("<<EnumDecl {}>>", node.Name().String()));
+    print(format("<<EnumDecl {}>>", node.GetName().GetString()));
 
     down();
 
-    for (auto it = node.EnumsBegin(), end = node.EnumsEnd(); it != end; ++it) {
-        it->Accept(*this);
+    for (auto&& en : node.GetEnums()) {
+        en.Accept(*this);
     }
 
     up();
@@ -84,20 +83,17 @@ void ASTPrinter::Visit(Expr &node) {
     print("<<Expr>>");
     (void)node;
 }
-void ASTPrinter::Visit(Assign &node) {
-    print("<<Assign>>");
-    (void)node;
-}
+
 void ASTPrinter::Visit(If &node) {
     print("<<If>>");
 
     down();
 
-    for (auto it = node.CondsBegin(), end = node.CondsEnd(); it != end; ++it) {
-        it->first->Accept(*this);
+    for (auto&& cond : node.GetConds()) {
+        cond.first->Accept(*this);
         down();
 
-        for (auto&& el : it->second) {
+        for (auto&& el : cond.second) {
             el->Accept(*this);
         }
 
@@ -105,8 +101,8 @@ void ASTPrinter::Visit(If &node) {
     }
 
 
-    for (auto it = node.ElseBegin(), end = node.ElseEnd(); it != end; ++it) {
-        (*it)->Accept(*this);
+    for (auto&& statement : node.GetElse()) {
+        statement->Accept(*this);
     }
 
     up();
@@ -114,24 +110,23 @@ void ASTPrinter::Visit(If &node) {
 void ASTPrinter::Visit(Return &node) {
     print("<<Return>>");
     down();
-    node.Value().Accept(*this);
+    node.GetValue().Accept(*this);
     up();
 }
 void ASTPrinter::Visit(BinaryOp &node) {
-    print(format("<<BinaryOp {}>>", node.Tok().ToString()));
+    print(format("<<BinaryOp {}>>", node.GetOp().ToString()));
     down();
-    node.Lhs().Accept(*this);
-    node.Rhs().Accept(*this);
+    node.GetLhs().Accept(*this);
+    node.GetRhs().Accept(*this);
     up();
 }
 void ASTPrinter::Visit(Call &node) {
     print("<<Call>>");
     down();
-    node.Callee().Accept(*this);
+    node.GetCallee().Accept(*this);
 
-    for (auto it = node.ArgsBegin(), end = node.ArgsEnd(); it != end;
-         ++it) {
-        (*it)->Accept(*this);
+    for (auto&& arg : node.GetArgs()) {
+        arg->Accept(*this);
     }
 
     up();

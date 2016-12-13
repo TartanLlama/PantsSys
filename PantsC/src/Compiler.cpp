@@ -5,6 +5,7 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Tokens.hpp"
+#include "ASTSerializer.hpp"
 
 #include "fmt/format.h"
 
@@ -32,6 +33,9 @@ int main(int argc, const char *argv[]) {
 
         pants::ASTPrinter printer{std::cout};
         printer.Visit(ast);
+        pants::ASTSerializer serializer{std::cout};
+        serializer.Visit(ast);
+
     }
     catch (pants::Parser::ParseError) {
         pants::PrintDiags(parser.diags(), file);
