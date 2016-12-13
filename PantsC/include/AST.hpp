@@ -16,7 +16,6 @@ class EnumDecl;
 class For;
 class While;
 class Expr;
-class Assign;
 class If;
 class Return;
 class BinaryOp;
@@ -39,7 +38,6 @@ class ASTVisitor {
     virtual void Visit(For &) = 0;
     virtual void Visit(While &) = 0;
     virtual void Visit(Expr &) = 0;
-    virtual void Visit(Assign &) = 0;
     virtual void Visit(If &) = 0;
     virtual void Visit(Return &) = 0;
     virtual void Visit(BinaryOp &) = 0;
@@ -73,14 +71,14 @@ class Id : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
     Id(Token tok) : Expr{tok} {}
-    std::string String() { return m_tok.String().value(); }
+    std::string GetString() { return m_tok.String().value(); }
 };
 
 class Int : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
     Int(Token tok) : Expr{tok} {}
-    int Val() { return m_tok.Int().value(); }
+    int GetInt() { return m_tok.Int().value(); }
 };
 
 class Bool : public Expr {
@@ -96,9 +94,9 @@ class BinaryOp : public Expr {
     BinaryOp(Token tok, ASTNodeUP lhs, ASTNodeUP rhs, Token op)
         : Expr{tok}, m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, m_op{op} {}
 
-    ASTNode &Lhs() { return *m_lhs; }
-    ASTNode &Rhs() { return *m_rhs; }
-    Token Tok() { return m_op; }
+    ASTNode &GetLhs() { return *m_lhs; }
+    ASTNode &GetRhs() { return *m_rhs; }
+    Token GetOp() { return m_op; }
 
   private:
     ASTNodeUP m_lhs;
@@ -107,18 +105,19 @@ class BinaryOp : public Expr {
 };
 
 class UnaryOp : public Expr {
-  public:
+public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
+    UnaryOp(Token tok, ASTNodeUP lhs, ASTNodeUP rhs, Token op)
+        : Expr{tok}, m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, m_op{op} {}
+
+    ASTNode &GetLhs() { return *m_lhs; }
+    ASTNode &GetRhs() { return *m_rhs; }
+    Token GetOp() { return m_op; }
+
+private:
     ASTNodeUP m_lhs;
     ASTNodeUP m_rhs;
     Token m_op;
-};
-
-class Assign : public ASTNode {
-  public:
-    void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    ASTNodeUP lhs;
-    ASTNodeUP rhs;
 };
 
 class Type : public ASTNode {
@@ -141,7 +140,7 @@ public:
 
     Type GetType() { return m_type; }
     Id GetId() { return m_id; }
-    ASTNode* GetInit() { return m_init.get(); }
+    ASTNodeUP& GetInit() { return m_init; }
 
     private:
     Type m_type;
@@ -159,12 +158,10 @@ class FuncDecl : public ASTNode {
         : ASTNode{tok}, m_name{name}, m_type{type}, m_params{std::move(params)},
           m_body{std::move(body)} {}
 
-    Id Name() { return m_name; }
+    Id GetName() { return m_name; }
     Type& GetType() { return m_type; }
-    auto ParamsBegin() { return begin(m_params); }
-    auto ParamsEnd() { return end(m_params); }
-    auto BodyBegin() { return begin(m_body); }
-    auto BodyEnd() { return end(m_body); }
+    auto& GetParams() { return m_params; }
+    auto& GetBody() { return m_body; }
 
   private:
     Id m_name;
@@ -180,10 +177,8 @@ class ClassDecl : public ASTNode {
         : ASTNode{tok}, m_name{name}, m_vars{std::move(vars)}
     {}
 
-    Id Name() { return m_name; }
-    auto VarsBegin() { return m_vars.begin(); }
-    auto VarsEnd() { return m_vars.end(); }
-
+    Id GetName() { return m_name; }
+    auto& GetVars() { return m_vars; }
 
   private:
     Id m_name;
@@ -197,9 +192,8 @@ public:
         ASTNode{tok}, m_name{name}, m_enums{std::move(enums)}
     {}
 
-    Id Name() { return m_name; }
-    auto EnumsBegin() { return m_enums.begin(); }
-    auto EnumsEnd() { return m_enums.end(); }
+    Id GetName() { return m_name; }
+    auto& GetEnums() { return m_enums; }
 
 
 private:
@@ -221,9 +215,8 @@ class While : public ASTNode {
     While (Token tok, ExprUP cond, std::vector<ASTNodeUP> body)
         : ASTNode(tok), m_cond(std::move(cond)), m_body(std::move(body)) {}
 
-    Expr& Cond() { return *m_cond; }
-    auto BodyBegin() { return m_body.begin(); }
-    auto BodyEnd() { return m_body.end(); }
+    Expr& GetCond() { return *m_cond; }
+    auto& GetBody() { return m_body; }
 
 private:
     ExprUP m_cond;
@@ -239,10 +232,8 @@ class If : public ASTNode {
         ASTNode{tok}, m_conds{std::move(conds)}, m_else{std::move(else_body)}
     {}
 
-    auto CondsBegin() { return m_conds.begin(); }
-    auto CondsEnd() { return m_conds.end(); }
-    auto ElseBegin() { return m_else.begin(); }
-    auto ElseEnd() { return m_else.end(); }
+    auto& GetConds() { return m_conds; }
+    auto& GetElse() { return m_else; }
 
   private:
     std::vector<CondBodyPair> m_conds;
@@ -255,9 +246,8 @@ class Call : public Expr {
     Call (Token tok, ExprUP callee, std::vector<ExprUP> args)
         : Expr(tok), m_callee(std::move(callee)), m_args(std::move(args)) {}
 
-    Expr& Callee() { return *m_callee; }
-    auto ArgsBegin() { return m_args.begin(); }
-    auto ArgsEnd() { return m_args.end(); }
+    Expr& GetCallee() { return *m_callee; }
+    auto& GetArgs() { return m_args; }
 
   private:
     ExprUP m_callee;
@@ -271,7 +261,7 @@ class Return : public ASTNode {
         : ASTNode{tok}, m_value{std::move(value)}
     {}
 
-    Expr& Value() { return *m_value; }
+    Expr& GetValue() { return *m_value; }
 
   private:
     ExprUP m_value;
@@ -280,8 +270,7 @@ class Return : public ASTNode {
 class AST {
   public:
     AST(std::vector<ASTNodeUP> nodes) : m_nodes{std::move(nodes)} {}
-    auto NodesBegin() { return m_nodes.begin(); }
-    auto NodesEnd() { return m_nodes.end(); }
+    auto& GetNodes() { return m_nodes; }
 
   private:
     std::vector<ASTNodeUP> m_nodes;

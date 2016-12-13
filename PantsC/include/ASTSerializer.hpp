@@ -2,10 +2,12 @@
 
 #include "AST.hpp"
 
+#include <iostream>
+
 namespace pants {
-class ASTPrinter : public ASTVisitor {
+class ASTSerializer : public ASTVisitor {
 public:
-    ASTPrinter(std::ostream& os) : m_os{os} {}
+    ASTSerializer(std::ostream& os) : m_os{os} {}
 
     void Visit(Id &) override;
     void Visit(Int &) override;
@@ -23,15 +25,11 @@ public:
     void Visit(Call &) override;
     void Visit(UnaryOp &) override;
     void Visit(Type &) override;
+    void Visit(ASTNode &);
 
     using ASTVisitor::Visit;
 
 private:
-    void up() { --m_depth; }
-    void down();
-    void print(const std::string& str);
-
     std::ostream& m_os;
-    std::size_t m_depth = 0;
 };
 }
