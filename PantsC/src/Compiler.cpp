@@ -6,6 +6,7 @@
 #include "Parser.hpp"
 #include "Tokens.hpp"
 #include "ASTSerializer.hpp"
+#include "ASTDeserializer.hpp"
 
 #include "fmt/format.h"
 
@@ -32,9 +33,13 @@ int main(int argc, const char *argv[]) {
         file.open(file_name);
 
         pants::ASTPrinter printer{std::cout};
-        printer.Visit(ast);
+        //printer.Visit(ast);
         pants::ASTSerializer serializer{std::cout};
-        serializer.Visit(ast);
+        //serializer.Visit(ast);
+        auto out_file = std::ifstream{"out"};
+        pants::ASTDeserializer deserializer{out_file};
+        auto new_ast = deserializer.Deserialize();
+        printer.Visit(new_ast);
 
     }
     catch (pants::Parser::ParseError) {

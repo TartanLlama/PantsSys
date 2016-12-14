@@ -25,11 +25,20 @@ public:
     void Visit(Call &) override;
     void Visit(UnaryOp &) override;
     void Visit(Type &) override;
-    void Visit(ASTNode &);
-
-    using ASTVisitor::Visit;
+    void Visit(AST &) override;
+    void Visit(Token &);
 
 private:
+    template <typename T>
+    void Write(const T& t) {
+        m_os.write(reinterpret_cast<const char*>(&t), sizeof(T));
+    }
     std::ostream& m_os;
 };
+
+template<>
+inline void ASTSerializer::Write(const std::string& s) {
+    m_os << s;
+}
+    
 }
