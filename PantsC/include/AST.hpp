@@ -52,7 +52,7 @@ class ASTNode {
   public:
     virtual void Accept(ASTVisitor &visitor) = 0;
     explicit ASTNode(Token tok) : m_tok{tok} {}
-    Token Tok() { return m_tok; }
+    Token& Tok() { return m_tok; }
 
   protected:
     Token m_tok;
@@ -73,6 +73,7 @@ class Id : public Expr {
     Id(Token tok) : Expr{tok} {}
     std::string GetString() { return m_tok.String().value(); }
 };
+using IdUP = std::unique_ptr<Id>;
 
 class Int : public Expr {
   public:
@@ -107,16 +108,14 @@ class BinaryOp : public Expr {
 class UnaryOp : public Expr {
 public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    UnaryOp(Token tok, ASTNodeUP lhs, ASTNodeUP rhs, Token op)
-        : Expr{tok}, m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, m_op{op} {}
+    UnaryOp(Token tok, ASTNodeUP arg, Token op)
+        : Expr{tok}, m_arg{std::move(arg)}, m_op{op} {}
 
-    ASTNode &GetLhs() { return *m_lhs; }
-    ASTNode &GetRhs() { return *m_rhs; }
+    ASTNode &GetArg() { return *m_arg; }
     Token GetOp() { return m_op; }
 
 private:
-    ASTNodeUP m_lhs;
-    ASTNodeUP m_rhs;
+    ASTNodeUP m_arg;
     Token m_op;
 };
 
@@ -202,9 +201,19 @@ private:
 };
 
 class For : public ASTNode {
-  public:
+public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
-    Id m_id;
+    For (Token tok, Id var_name, ASTNodeUP range, std::vector<ASTNodeUP> body) :
+        ASTNode{tok}, m_var_name{var_name}, m_range{std::move(range)}, m_body{std::move(body)}
+    {}
+
+
+    Id GetVarName() { return m_var_name; }
+    auto& GetRange() { return m_range; }
+    auto& GetBody() { return m_body; }
+    
+private:
+    Id m_var_name;
     ASTNodeUP m_range;
     std::vector<ASTNodeUP> m_body;
 };
