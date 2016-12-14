@@ -81,13 +81,14 @@ class Int : public Expr {
     Int(Token tok) : Expr{tok} {}
     int GetInt() { return m_tok.Int().value(); }
 };
+using IntUP = std::unique_ptr<Int>;
 
 class Bool : public Expr {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
     Bool(Token tok) : Expr{tok} {}
 };
-
+using BoolUP = std::unique_ptr<Bool>;
 
 class BinaryOp : public Expr {
   public:
@@ -104,6 +105,7 @@ class BinaryOp : public Expr {
     ASTNodeUP m_rhs;
     Token m_op;
 };
+using BinaryOpUP = std::unique_ptr<BinaryOp>;
 
 class UnaryOp : public Expr {
 public:
@@ -118,13 +120,14 @@ private:
     ASTNodeUP m_arg;
     Token m_op;
 };
+using UnaryOpUP = std::unique_ptr<UnaryOp>;
 
 class Type : public ASTNode {
 public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
     Type(Token tok) : ASTNode{tok} {}
 };
-
+using TypeUP = std::unique_ptr<Type>;
 
 class VarDecl : public ASTNode {
 public:
@@ -148,7 +151,6 @@ public:
 };
 using VarDeclUP = std::unique_ptr<VarDecl>;
 
-
 class FuncDecl : public ASTNode {
   public:
     void Accept(ASTVisitor &visitor) override { visitor.Visit(*this); }
@@ -168,6 +170,7 @@ class FuncDecl : public ASTNode {
     std::vector<VarDeclUP> m_params;
     std::vector<ASTNodeUP> m_body;
 };
+using FuncDeclUP = std::unique_ptr<FuncDecl>;
 
 class ClassDecl : public ASTNode {
   public:
@@ -183,6 +186,7 @@ class ClassDecl : public ASTNode {
     Id m_name;
     std::vector<VarDeclUP> m_vars;
 };
+using ClassDeclUP = std::unique_ptr<ClassDecl>;
 
 class EnumDecl : public ASTNode {
 public:
@@ -199,6 +203,7 @@ private:
     Id m_name;
     std::vector<Id> m_enums;
 };
+using EnumDeclUP = std::unique_ptr<EnumDecl>;
 
 class For : public ASTNode {
 public:
@@ -217,6 +222,7 @@ private:
     ASTNodeUP m_range;
     std::vector<ASTNodeUP> m_body;
 };
+using ForUP = std::unique_ptr<For>;
 
 class While : public ASTNode {
   public:
@@ -231,6 +237,7 @@ private:
     ExprUP m_cond;
     std::vector<ASTNodeUP> m_body;
 };
+using WhileUP = std::unique_ptr<While>;
 
 class If : public ASTNode {
   public:
@@ -248,6 +255,7 @@ class If : public ASTNode {
     std::vector<CondBodyPair> m_conds;
     std::vector<ASTNodeUP> m_else;
 };
+using IfUP = std::unique_ptr<If>;
 
 class Call : public Expr {
   public:
@@ -262,6 +270,7 @@ class Call : public Expr {
     ExprUP m_callee;
     std::vector<ExprUP> m_args;
 };
+using CallUP = std::unique_ptr<Call>;
 
 class Return : public ASTNode {
   public:
@@ -275,6 +284,7 @@ class Return : public ASTNode {
   private:
     ExprUP m_value;
 };
+using ReturnUP = std::unique_ptr<Return>;
 
 class AST {
   public:
