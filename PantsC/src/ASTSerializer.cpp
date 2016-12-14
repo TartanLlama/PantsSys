@@ -7,8 +7,8 @@ void ASTSerializer::Visit(Token& tok) {
     Write(tok.Row());
     Write(tok.Col());
 
-    if (tok == Token::id_) Write(tok.String());
-    if (tok == Token::int_) Write(tok.Int());
+    if (tok == Token::id_) Write(tok.String().value());
+    if (tok == Token::int_) Write(tok.Int().value());
 }
 
 void ASTSerializer::Visit(Id &node) {
@@ -24,7 +24,6 @@ void ASTSerializer::Visit(Int &node) {
 void ASTSerializer::Visit(Bool &node) {
     Write(id_for<Bool>);
     Visit(node.Tok());
-    Write((node.Tok() == Token::true_ ? uint8_t{1} : uint8_t{0}));
 }
 
 void ASTSerializer::Visit(VarDecl &node) {
@@ -57,7 +56,7 @@ void ASTSerializer::Visit(FuncDecl &node) {
 void ASTSerializer::Visit(ClassDecl &node) {
     Write(id_for<ClassDecl>);
     Visit(node.Tok());
-    Write(node.GetName());
+    Visit(node.GetName());
     Write(node.GetVars().size());
     for (auto&& var : node.GetVars()) {
         var->Accept(*this);
@@ -122,6 +121,7 @@ void ASTSerializer::Visit(BinaryOp &node) {
     Visit(node.Tok());
     node.GetLhs().Accept(*this);
     node.GetRhs().Accept(*this);
+    Visit(node.GetOp());
 }
 
 void ASTSerializer::Visit(Call &node) {
@@ -151,6 +151,6 @@ void ASTSerializer::Visit(AST &ast) {
     Write(ast.GetNodes().size());
     for (auto&& node : ast.GetNodes()) {
         node->Accept(*this);
-    }    
-}    
+    }
+}
 }
