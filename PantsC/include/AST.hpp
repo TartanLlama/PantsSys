@@ -97,7 +97,7 @@ class BinaryOp : public Expr {
 
     ASTNode &GetLhs() { return *m_lhs; }
     ASTNode &GetRhs() { return *m_rhs; }
-    Token GetOp() { return m_op; }
+    Token &GetOp() { return m_op; }
 
   private:
     ASTNodeUP m_lhs;
@@ -112,7 +112,7 @@ public:
         : Expr{tok}, m_arg{std::move(arg)}, m_op{op} {}
 
     ASTNode &GetArg() { return *m_arg; }
-    Token GetOp() { return m_op; }
+    Token &GetOp() { return m_op; }
 
 private:
     ASTNodeUP m_arg;
@@ -157,7 +157,7 @@ class FuncDecl : public ASTNode {
         : ASTNode{tok}, m_name{name}, m_type{type}, m_params{std::move(params)},
           m_body{std::move(body)} {}
 
-    Id GetName() { return m_name; }
+    Id& GetName() { return m_name; }
     Type& GetType() { return m_type; }
     auto& GetParams() { return m_params; }
     auto& GetBody() { return m_body; }
@@ -176,7 +176,7 @@ class ClassDecl : public ASTNode {
         : ASTNode{tok}, m_name{name}, m_vars{std::move(vars)}
     {}
 
-    Id GetName() { return m_name; }
+    Id& GetName() { return m_name; }
     auto& GetVars() { return m_vars; }
 
   private:
@@ -191,7 +191,7 @@ public:
         ASTNode{tok}, m_name{name}, m_enums{std::move(enums)}
     {}
 
-    Id GetName() { return m_name; }
+    Id& GetName() { return m_name; }
     auto& GetEnums() { return m_enums; }
 
 
@@ -211,7 +211,7 @@ public:
     Id GetVarName() { return m_var_name; }
     auto& GetRange() { return m_range; }
     auto& GetBody() { return m_body; }
-    
+
 private:
     Id m_var_name;
     ASTNodeUP m_range;

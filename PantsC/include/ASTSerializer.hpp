@@ -38,7 +38,7 @@ private:
 
 template<>
 inline void ASTSerializer::Write(const std::string& s) {
-    m_os << s;
+    m_os << s << '\0';
 }
-    
+
 }

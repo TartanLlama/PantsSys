@@ -27,7 +27,7 @@ private:
         m_is.seekg(-sizeof(uint32_t), std::ios_base::cur);
         return tag;
     }
-    
+
     template <typename T>
     T Read(tag<T>) {
         T t;
@@ -37,14 +37,16 @@ private:
 
     std::string Read(tag<std::string>) {
         std::string s;
-        m_is >> s;
+        std::getline(m_is, s, '\0');
         return s;
     }
 
     Token Read(tag<Token>) {
         std::underlying_type_t<Token::Kind> k_val;
         std::size_t row, col;
-        m_is >> k_val >> row >> col;
+        m_is.read(reinterpret_cast<char*>(&k_val), sizeof(k_val));
+        m_is.read(reinterpret_cast<char*>(&row), sizeof(row));
+        m_is.read(reinterpret_cast<char*>(&col), sizeof(col));
 
         Token::Kind k = static_cast<Token::Kind>(k_val);
 
@@ -71,7 +73,7 @@ private:
 
     template <typename T>
     std::unique_ptr<T> DeserializeNode();
-    
+
     std::istream& m_is;
 };
 
@@ -89,7 +91,7 @@ inline std::unique_ptr<Id> ASTDeserializer::DeserializeNode<Id>() {
     auto tok = Read<Token>();
     return std::make_unique<Id>(tok);
 }
-    
+
 template<>
 inline std::unique_ptr<Int> ASTDeserializer::DeserializeNode<Int>() {
     auto id = Read<uint32_t>();
@@ -139,11 +141,11 @@ inline std::unique_ptr<FuncDecl> ASTDeserializer::DeserializeNode<FuncDecl>() {
     assert(id == id_for<FuncDecl>);
     auto tok = Read<Token>();
 
-    auto name = *DeserializeNode<Id>(); 
+    auto name = *DeserializeNode<Id>();
     auto type = *DeserializeNode<Type>();
 
     auto params = Read<std::vector<VarDecl>>();
-    auto body = Read<std::vector<ASTNode>>();    
+    auto body = Read<std::vector<ASTNode>>();
 
     return std::make_unique<FuncDecl>(tok,std::move(name),std::move(type),std::move(params),std::move(body));
 }
@@ -179,7 +181,7 @@ inline std::unique_ptr<For> ASTDeserializer::DeserializeNode<For>() {
     auto name = *DeserializeNode<Id>();
     auto range = DeserializeNode<ASTNode>();
     auto body = Read<std::vector<ASTNode>>();
-    
+
     return std::make_unique<For>(tok, name, std::move(range), std::move(body));
 }
 
@@ -206,7 +208,7 @@ inline std::unique_ptr<If> ASTDeserializer::DeserializeNode<If>() {
     conds.reserve(n_conds);
     for (size_t i = 0; i < n_conds; ++i) {
         auto cond = DeserializeNode<Expr>();
-        
+
         auto n_statements = Read<size_t>();
         std::vector<ASTNodeUP> body;
         body.reserve(n_statements);
@@ -218,7 +220,7 @@ inline std::unique_ptr<If> ASTDeserializer::DeserializeNode<If>() {
     }
 
     auto else_body = Read<std::vector<ASTNode>>();
-    
+
     return std::make_unique<If>(tok, std::move(conds), std::move(else_body));
 }
 
@@ -264,7 +266,7 @@ inline std::unique_ptr<UnaryOp> ASTDeserializer::DeserializeNode<UnaryOp>() {
     auto op = Read<Token>();
 
     return std::make_unique<UnaryOp>(tok, std::move(arg), op);
-    
+
 }
 
 template<>
@@ -289,7 +291,7 @@ inline ASTNodeUP ASTDeserializer::DeserializeNode<ASTNode>() {
     case id_for<UnaryOp>: return DeserializeNode<UnaryOp>();
     case id_for<Type>: return DeserializeNode<Type>();
     default: throw std::runtime_error("Can't deserialize base case node");
-    }    
+    }
 }
 
 template<>
@@ -305,6 +307,6 @@ inline ExprUP ASTDeserializer::DeserializeNode<Expr>() {
     case id_for<Call>: return DeserializeNode<Call>();
     case id_for<UnaryOp>: return DeserializeNode<UnaryOp>();
     default: throw std::runtime_error("Not an expression");
-    }    
+    }
 }
 }

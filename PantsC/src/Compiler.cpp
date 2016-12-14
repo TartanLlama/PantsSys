@@ -34,8 +34,16 @@ int main(int argc, const char *argv[]) {
 
         pants::ASTPrinter printer{std::cout};
         printer.Visit(ast);
-        pants::ASTSerializer serializer{std::cout};
+        std::fstream out_file {"out"};
+
+        pants::ASTSerializer serializer{out_file};
         serializer.Visit(ast);
+        out_file.close();
+        out_file.open("out");
+
+        pants::ASTDeserializer deserializer{out_file};
+        auto new_ast = deserializer.Deserialize();
+        printer.Visit(new_ast);
     }
     catch (pants::Parser::ParseError) {
         pants::PrintDiags(parser.diags(), file);
