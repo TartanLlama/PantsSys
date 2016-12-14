@@ -4,6 +4,7 @@
 #include "Tokens.hpp"
 #include "ASTSerializationIds.hpp"
 #include "UniquePtrCast.hpp"
+#include "Assert.hpp"
 
 #include <iostream>
 #include <type_traits>
@@ -87,7 +88,7 @@ std::unique_ptr<Expr> ASTDeserializer::DeserializeNode<Expr>();
 template<>
 inline std::unique_ptr<Id> ASTDeserializer::DeserializeNode<Id>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Id>);
+    ASSERT(id == id_for<Id>);
     auto tok = Read<Token>();
     return std::make_unique<Id>(tok);
 }
@@ -95,7 +96,7 @@ inline std::unique_ptr<Id> ASTDeserializer::DeserializeNode<Id>() {
 template<>
 inline std::unique_ptr<Int> ASTDeserializer::DeserializeNode<Int>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Int>);
+    ASSERT(id == id_for<Int>);
     auto tok = Read<Token>();
     return std::make_unique<Int>(tok);
 }
@@ -103,7 +104,7 @@ inline std::unique_ptr<Int> ASTDeserializer::DeserializeNode<Int>() {
 template<>
 inline std::unique_ptr<Bool> ASTDeserializer::DeserializeNode<Bool>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Bool>);
+    ASSERT(id == id_for<Bool>);
     auto tok = Read<Token>();
     return std::make_unique<Bool>(tok);
 }
@@ -111,7 +112,7 @@ inline std::unique_ptr<Bool> ASTDeserializer::DeserializeNode<Bool>() {
 template<>
 inline std::unique_ptr<Type> ASTDeserializer::DeserializeNode<Type>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Type>);
+    ASSERT(id == id_for<Type>);
     auto tok = Read<Token>();
 
     return std::make_unique<Type>(tok);
@@ -120,7 +121,7 @@ inline std::unique_ptr<Type> ASTDeserializer::DeserializeNode<Type>() {
 template<>
 inline std::unique_ptr<VarDecl> ASTDeserializer::DeserializeNode<VarDecl>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<VarDecl>);
+    ASSERT(id == id_for<VarDecl>);
     auto tok = Read<Token>();
 
     auto type = *DeserializeNode<Type>();
@@ -138,7 +139,7 @@ inline std::unique_ptr<VarDecl> ASTDeserializer::DeserializeNode<VarDecl>() {
 template<>
 inline std::unique_ptr<FuncDecl> ASTDeserializer::DeserializeNode<FuncDecl>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<FuncDecl>);
+    ASSERT(id == id_for<FuncDecl>);
     auto tok = Read<Token>();
 
     auto name = *DeserializeNode<Id>();
@@ -153,7 +154,7 @@ inline std::unique_ptr<FuncDecl> ASTDeserializer::DeserializeNode<FuncDecl>() {
 template<>
 inline std::unique_ptr<ClassDecl> ASTDeserializer::DeserializeNode<ClassDecl>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<ClassDecl>);
+    ASSERT(id == id_for<ClassDecl>);
     auto tok = Read<Token>();
     auto name = *DeserializeNode<Id>();
     auto vars = Read<std::vector<VarDecl>>();
@@ -164,7 +165,7 @@ inline std::unique_ptr<ClassDecl> ASTDeserializer::DeserializeNode<ClassDecl>() 
 template<>
 inline std::unique_ptr<EnumDecl> ASTDeserializer::DeserializeNode<EnumDecl>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<EnumDecl>);
+    ASSERT(id == id_for<EnumDecl>);
     auto tok = Read<Token>();
 
     auto enums = pointer_container_get_values(Read<std::vector<Id>>());
@@ -175,7 +176,7 @@ inline std::unique_ptr<EnumDecl> ASTDeserializer::DeserializeNode<EnumDecl>() {
 template<>
 inline std::unique_ptr<For> ASTDeserializer::DeserializeNode<For>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<For>);
+    ASSERT(id == id_for<For>);
     auto tok = Read<Token>();
 
     auto name = *DeserializeNode<Id>();
@@ -188,7 +189,7 @@ inline std::unique_ptr<For> ASTDeserializer::DeserializeNode<For>() {
 template<>
 inline std::unique_ptr<While> ASTDeserializer::DeserializeNode<While>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<While>);
+    ASSERT(id == id_for<While>);
     auto tok = Read<Token>();
 
     auto cond = DeserializeNode<Expr>();
@@ -200,7 +201,7 @@ inline std::unique_ptr<While> ASTDeserializer::DeserializeNode<While>() {
 template<>
 inline std::unique_ptr<If> ASTDeserializer::DeserializeNode<If>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<If>);
+    ASSERT(id == id_for<If>);
     auto tok = Read<Token>();
 
     auto n_conds = Read<size_t>();
@@ -227,7 +228,7 @@ inline std::unique_ptr<If> ASTDeserializer::DeserializeNode<If>() {
 template<>
 inline std::unique_ptr<Return> ASTDeserializer::DeserializeNode<Return>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Return>);
+    ASSERT(id == id_for<Return>);
     auto tok = Read<Token>();
     auto expr = DeserializeNode<Expr>();
 
@@ -237,7 +238,7 @@ inline std::unique_ptr<Return> ASTDeserializer::DeserializeNode<Return>() {
 template<>
 inline std::unique_ptr<BinaryOp> ASTDeserializer::DeserializeNode<BinaryOp>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<BinaryOp>);
+    ASSERT(id == id_for<BinaryOp>);
     auto tok = Read<Token>();
     auto lhs = DeserializeNode<Expr>();
     auto rhs = DeserializeNode<Expr>();
@@ -249,7 +250,7 @@ inline std::unique_ptr<BinaryOp> ASTDeserializer::DeserializeNode<BinaryOp>() {
 template<>
 inline std::unique_ptr<Call> ASTDeserializer::DeserializeNode<Call>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<Call>);
+    ASSERT(id == id_for<Call>);
     auto tok = Read<Token>();
     auto callee = DeserializeNode<Expr>();
     auto args = Read<std::vector<Expr>>();
@@ -260,7 +261,7 @@ inline std::unique_ptr<Call> ASTDeserializer::DeserializeNode<Call>() {
 template<>
 inline std::unique_ptr<UnaryOp> ASTDeserializer::DeserializeNode<UnaryOp>() {
     auto id = Read<uint32_t>();
-    assert(id == id_for<UnaryOp>);
+    ASSERT(id == id_for<UnaryOp>);
     auto tok = Read<Token>();
     auto arg = DeserializeNode<Expr>();
     auto op = Read<Token>();
