@@ -78,6 +78,7 @@ private:
     std::istream& m_is;
 };
 
+// Declare all specializations of DeserializeNode so that they can be defined in the implementation file
 template<> auto ASTDeserializer::DeserializeNode<ASTNode>() -> ASTNodeUP;
 template<> auto ASTDeserializer::DeserializeNode<Expr>() -> ExprUP;
 template<> auto ASTDeserializer::DeserializeNode<Id>() -> IdUP;

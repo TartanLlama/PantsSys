@@ -33,14 +33,14 @@ Register emitReg(std::vector<char> &buf, std::istream &is) {
     std::string name;
     is >> name;
 
-    if (!g_register_names.count(name)) {
+    try {
+        auto reg = RegisterFromName(name);
+        emit(buf, static_cast<uint16_t>(reg));
+        return reg;
+    }
+    catch (...) {
         throw std::runtime_error(fmt::format("Bad register: {}", name));
     }
-
-    auto reg = g_register_names[name];
-    emit(buf, static_cast<uint16_t>(reg));
-
-    return reg;
 }
 
 using Labels = std::unordered_map<std::string, uint64_t>;

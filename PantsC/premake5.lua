@@ -5,7 +5,7 @@ project "PantsC"
     targetdir "../build/bin/%{cfg.buildcfg}"
     includedirs {"include", "../ext/fmt", "../ext", "../Common/include"}
     links {"fmt"}
-    files {"include/**.hpp", "src/**.cpp"}
+    files {"include/**.hpp", "src/**.cpp", "../Common/src/PantsIsa.cpp"}
 
 include "test/lexer"
-include "test/parser"    
+include "test/parser"

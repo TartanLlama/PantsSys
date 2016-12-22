@@ -7,6 +7,7 @@
 #include "Tokens.hpp"
 #include "ASTSerializer.hpp"
 #include "ASTDeserializer.hpp"
+#include "CodeGen.hpp"
 
 #include "fmt/format.h"
 
@@ -33,17 +34,10 @@ int main(int argc, const char *argv[]) {
         file.open(file_name);
 
         pants::ASTPrinter printer{std::cout};
-        printer.Visit(ast);
-        std::fstream out_file {"out"};
+        //printer.Visit(ast);
 
-        pants::ASTSerializer serializer{out_file};
-        serializer.Visit(ast);
-        out_file.close();
-        out_file.open("out");
-
-        pants::ASTDeserializer deserializer{out_file};
-        auto new_ast = deserializer.Deserialize();
-        printer.Visit(new_ast);
+        pants::CodeGen codegen{std::cout};
+        codegen.Visit(ast);
     }
     catch (pants::Parser::ParseError) {
         pants::PrintDiags(parser.diags(), file);

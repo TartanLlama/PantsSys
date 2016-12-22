@@ -47,5 +47,8 @@ enum class Register {
     ra = 0x11,
     n_registers
 };
+
+Register RegisterFromName (const std::string& reg);
+std::string NameFromRegister (Register reg);
 extern std::unordered_map<std::string, Register> g_register_names;
 }
