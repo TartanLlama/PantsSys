@@ -1,0 +1,4 @@
+func entry [] -> nil is
+#    char* a = 0;
+    *a = 4;
+end

@@ -14,7 +14,6 @@ std::string CodeGen::GetMangledName (FuncDecl& func) {
 }
 
 void CodeGen::Visit(Id &node) {
-    //TODO
     (void)node;
 }
 
@@ -84,6 +83,31 @@ void CodeGen::Visit(Return &node) {
 void CodeGen::Visit(BinaryOp &node) {
     auto target = GetTarget();
 
+    if (node.GetOp() == Token::assign_) {
+        SetTarget(Register::r1);
+        node.GetRhs().Accept(*this);
+
+        if (auto op = dynamic_cast<UnaryOp*>(&node.GetLhs())) {
+            if (op->Tok() == Token::mul_) {
+                auto& arg = op->GetArg();
+                SetTarget(Register::r0);
+                arg.Accept(*this);
+                EmitInst("set", Register::me, Register::r0);
+                EmitInst("store", Register::r1);
+                return;
+            }
+            else {
+                return;
+                //TODO
+            }
+        }
+        else {
+            return;
+            //TODO
+        }
+    }
+
+
     SetTarget(Register::r0);
     node.GetLhs().Accept(*this);
 
@@ -104,7 +128,7 @@ void CodeGen::Visit(BinaryOp &node) {
     case Token::eq_: inst = "eq"; break;
     case Token::and_: inst = "and"; break;
     case Token::or_: inst = "or"; break;
-    default: throw std::runtime_error("Unhandled operator");
+    default: throw std::runtime_error("Unhandled codegen operator");
     }
 
     EmitInst(inst, target, Register::r0, Register::r1);

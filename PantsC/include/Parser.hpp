@@ -52,6 +52,7 @@ class Parser {
     ExprUP UnaryAction(Token tok);
     ExprUP LeftAction(Token tok, ExprUP left);
 
+    int GetUnaryBindingPower(Token tok);
     int GetLeftBindingPower(Token tok);
 
     bool CouldBeType(Token tok);

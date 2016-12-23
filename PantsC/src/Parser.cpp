@@ -207,6 +207,17 @@ ASTNodeUP Parser::ParseReturn() {
     return std::make_unique<Return>(ret_tok, std::move(cond));
 }
 
+int Parser::GetUnaryBindingPower(Token tok) {
+    switch (tok.Type()) {
+    case Token::mul_:
+        return 60;
+
+    default:
+        throw std::runtime_error(fmt::format("Unhandled unary binding power token {}", tok.ToString()));
+    }
+
+}
+
 int Parser::GetLeftBindingPower(Token tok) {
     switch (tok.Type()) {
     case Token::assign_:
@@ -234,13 +245,13 @@ int Parser::GetLeftBindingPower(Token tok) {
         return 50;
 
     case Token::lparen_:
-        return 60;
+        return 70;
 
     case Token::semi_:
     case Token::comma_:
     case Token::rparen_:
         return 0;
-        
+
     default:
         throw std::runtime_error(fmt::format("Unhandled left binding power token {}", tok.ToString()));
     }
@@ -264,6 +275,11 @@ ExprUP Parser::UnaryAction(Token tok) {
         ExpectToken(Token::rparen_);
         return expr;
     }
+
+    case Token::mul_: {
+        auto right_s = ParseSubExpression(GetUnaryBindingPower(tok));
+        return std::make_unique<UnaryOp>(tok, std::move(right_s), tok);
+     }
 
     default:
         throw UnimplementedException{};

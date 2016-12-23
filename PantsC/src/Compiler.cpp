@@ -34,7 +34,7 @@ int main(int argc, const char *argv[]) {
         file.open(file_name);
 
         pants::ASTPrinter printer{std::cout};
-        //printer.Visit(ast);
+        printer.Visit(ast);
 
         pants::CodeGen codegen{std::cout};
         codegen.Visit(ast);

@@ -132,8 +132,10 @@ void ASTPrinter::Visit(Call &node) {
     up();
 }
 void ASTPrinter::Visit(UnaryOp &node) {
-    print("<<UnaryOp>>");
-    (void)node;
+    print(format("<<UnaryOp {}>>", node.GetOp().ToString()));
+    down();
+    node.GetArg().Accept(*this);
+    up();
 }
 
 void ASTPrinter::Visit(Type &node) {
