@@ -53,6 +53,7 @@ class ASTNode {
     virtual void Accept(ASTVisitor &visitor) = 0;
     explicit ASTNode(Token tok) : m_tok{tok} {}
     Token& Tok() { return m_tok; }
+    Token Tok() const { return m_tok; }
 
   protected:
     Token m_tok;

@@ -108,14 +108,14 @@ class Token {
     Token(Kind kind, std::size_t row, std::size_t col, const std::string &data)
         : m_kind{kind}, m_row{row}, m_col{col}, m_string{data} {}
 
-    util::optional<std::string> String() {
+    tl::optional<std::string> String() {
         if (m_kind != id_) {
             return {};
         }
         return m_string;
     }
 
-    util::optional<int> Int() {
+    tl::optional<int> Int() {
         if (m_kind != int_) {
             return {};
         }

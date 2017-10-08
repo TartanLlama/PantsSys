@@ -250,6 +250,7 @@ int Parser::GetLeftBindingPower(Token tok) {
     case Token::semi_:
     case Token::comma_:
     case Token::rparen_:
+    case Token::do_:
         return 0;
 
     default:

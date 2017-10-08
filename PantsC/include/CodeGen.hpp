@@ -1,3 +1,6 @@
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+
 #include "AST.hpp"
 #include "PantsIsa.hpp"
 #include <iostream>
@@ -21,7 +24,7 @@ private:
 
 class CodeGen : public ASTVisitor {
     public:
-    CodeGen(std::ostream& os) : m_target{}, m_os{os} {}
+    CodeGen(std::ostream& os) : m_target{}, m_os{os}, m_label_count{0}, m_ctx{}, m_mod{"module", m_ctx} {}
 
     void Visit(Id &) override;
     void Visit(Int &) override;
@@ -63,6 +66,10 @@ private:
         m_os << '\n';
     }
 
+    std::string GenLabel(const std::string& prefix) {
+        return prefix + std::to_string(m_label_count++);
+    }
+
 
     std::string GetMangledName (FuncDecl& func);
 
@@ -71,6 +78,8 @@ private:
 
     Register m_target;
     std::ostream& m_os;
-
+    unsigned m_label_count;
+    llvm::LLVMContext m_ctx;
+    llvm::Module m_mod;
 };
 }

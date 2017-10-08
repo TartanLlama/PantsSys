@@ -1,3 +1,5 @@
+#include "llvm/IR/IRBuilder.h"
+
 #include "CodeGen.hpp"
 #include "PantsIsa.hpp"
 
@@ -33,17 +35,37 @@ void CodeGen::Visit(VarDecl &node) {
     (void)node;
 }
 
-void CodeGen::Visit(FuncDecl &node) {
-    auto mangled_name = GetMangledName(node);
-    EmitLabel(mangled_name);
+    llvm::Type* to_llvm_type (llvm::LLVMContext& ctx, Type const& t) {
+        switch (t.Tok().Type()) {
+        case Token::u8_:
+        case Token::i8_:
+            return llvm::IntegerType::get(ctx, 8);
 
-    for (auto&& param : node.GetParams()) {
-        //TODO
-        (void)param;
+        case Token::u16_:
+        case Token::i16_:
+            return llvm::IntegerType::get(ctx, 16);
+
+        case Token::u32_:
+        case Token::i32_:
+            return llvm::IntegerType::get(ctx, 32);
+
+        default:
+            return nullptr;
+        }
     }
 
+void CodeGen::Visit(FuncDecl &node) {
+    auto&& params = node.GetParams();
+    std::vector<llvm::Type*> types;
+    types.reserve(node.GetParams().size());
+    std::transform(begin(params), end(params), std::back_inserter(types),
+                   [&](auto&& t) { return to_llvm_type(m_ctx, t->GetType()); });
+
+    auto ft = llvm::FunctionType::get(to_llvm_type(m_ctx,node.GetType()), llvm::ArrayRef<llvm::Type*>{types}, false);
+    auto func = llvm::Function::Create(ft, llvm::GlobalValue::ExternalLinkage, node.GetName().GetString(), &m_mod);
+
     for (auto&& statement : node.GetBody()) {
-        statement->Accept(*this);
+//        statement->Accept(*this);
     }
 }
 
@@ -71,13 +93,33 @@ void CodeGen::Visit(Expr &node) {
 }
 
 void CodeGen::Visit(If &node) {
-    //TODO
-    (void)node;
+    for (auto&& cond : node.GetConds()) {
+        SetTarget(Register::r0);
+        cond.first->Accept(*this);
+        EmitInst("branch", Register::r0);
+    }
+
+    for (auto&& cond : node.GetConds()) {
+        EmitLabel(GenLabel("if"));
+        for (auto&& stmt : cond.second) {
+            stmt->Accept(*this);
+        }
+        EmitInst("jump");
+    }
+
+    if (!node.GetElse().empty()) {
+        for (auto&& stmt : node.GetElse()) {
+            stmt->Accept(*this);
+        }
+    }
+
+    EmitLabel(GenLabel("endif"));
 }
 
 void CodeGen::Visit(Return &node) {
-    //TODO
-    (void)node;
+    SetTarget(Register::r0);
+    node.GetValue().Accept(*this);
+    EmitInst("ret", Register::r0);
 }
 
 void CodeGen::Visit(BinaryOp &node) {
@@ -153,5 +195,7 @@ void CodeGen::Visit(AST &ast) {
     for (auto&& node : ast.GetNodes()) {
         node->Accept(*this);
     }
+
+    m_mod.dump();
 }
 }

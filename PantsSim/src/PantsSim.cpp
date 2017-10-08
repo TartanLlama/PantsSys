@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iterator>
 #include <utility>
+#include <type_traits>
 
 #include "BitTwiddling.hpp"
 #include "Config.hpp"
@@ -10,6 +11,22 @@
 #include "PantsUI.hpp"
 
 using namespace pants::util;
+
+namespace {
+    template <typename T>
+    auto utos (T t) {
+        std::make_signed_t<T> res;
+        memcpy(&res, &t, sizeof(t));
+        return res;
+    }
+
+    template <typename T>
+    auto stou (T t) {
+        std::make_unsigned_t<T> res;
+        memcpy(&res, &t, sizeof(t));
+        return res;
+    }
+}
 
 namespace pants {
 namespace sim {
@@ -43,24 +60,24 @@ bool execute(const Instruction &inst, RegisterSet &regs, Memory &mem,
     switch (op) {
     case Opcode::add_:
         if (regs.sn())
-            regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) +
-                                        int32_t(regs.get(low16(operands))));
+            regs.get(target) = stou(utos(regs.get(high16(operands))) +
+                                    utos(regs.get(low16(operands))));
         else
             regs.get(target) =
                 regs.get(high16(operands)) + regs.get(low16(operands));
         break;
     case Opcode::sub_:
         if (regs.sn())
-            regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) -
-                                        int32_t(regs.get(low16(operands))));
+            regs.get(target) = stou(utos(regs.get(high16(operands))) -
+                                    utos(regs.get(low16(operands))));
         else
             regs.get(target) =
                 regs.get(high16(operands)) - regs.get(low16(operands));
         break;
     case Opcode::mul_:
         if (regs.sn())
-            regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) *
-                                        int32_t(regs.get(low16(operands))));
+            regs.get(target) = stou(utos(regs.get(high16(operands))) *
+                                    utos(regs.get(low16(operands))));
         else
             regs.get(target) =
                 regs.get(high16(operands)) * regs.get(low16(operands));
@@ -68,8 +85,8 @@ bool execute(const Instruction &inst, RegisterSet &regs, Memory &mem,
 
     case Opcode::div_:
         if (regs.sn())
-            regs.get(target) = uint32_t(int32_t(regs.get(high16(operands))) /
-                                        int32_t(regs.get(low16(operands))));
+            regs.get(target) = stou(utos(regs.get(high16(operands))) /
+                                    utos(regs.get(low16(operands))));
         else
             regs.get(target) =
                 regs.get(high16(operands)) / regs.get(low16(operands));
